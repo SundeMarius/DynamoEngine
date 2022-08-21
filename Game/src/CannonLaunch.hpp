@@ -14,18 +14,17 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with CannonLaunch.  If not, see <http://www.gnu.org/licenses/>.
+#include "Lib/src/core/resourceloader.hpp"
 #include "Lib/src/core/application.hpp"
 
 class CannonLaunchGame : public Application
 {
 public:
-    CannonLaunchGame(const ApplicationSpecification &spec) : Application(spec) {}
+    CannonLaunchGame(ApplicationSpecification specification, ResourceSpecification resources) : Application(specification, resources) {}
 
-    virtual void OnEvent(SDL_Event *event) {}
+    void OnEvent(SDL_Event *event) {}
 
-    virtual void Update(const Timestep &dt) {}
-
-    virtual void Display() {}
+    void Update(const Timestep &dt) {}
 
 private:
 };

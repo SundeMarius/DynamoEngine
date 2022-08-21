@@ -21,9 +21,20 @@ Application *CreateApplication(ApplicationCommandLineArguments args)
 {
     ApplicationSpecification spec = {
         .name = "Cannon Launch!",
-        .fontFile = "assets/fonts/roboto/RobotoCondensed-Bold.ttf",
-        .displayFPS = true,
+        .RenderFPS = true,
         .args = args,
     };
-    return new CannonLaunchGame(spec);
+    ResourceSpecification rspec = {
+        .fontFile = "assets/fonts/open-sans/OpenSans-Regular.ttf",
+        .backgroundTextureFile = "assets/images/craftpix-402033-free-horizontal-2d-game-backgrounds/PNG/game_background_1/game_background_1.png",
+    };
+    return new CannonLaunchGame(spec, rspec);
 }
+
+/* void OnEvent(SDL_Event *event)
+{
+}
+
+void Update(const Timestep &dt)
+{
+} */

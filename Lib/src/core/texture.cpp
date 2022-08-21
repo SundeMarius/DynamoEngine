@@ -14,14 +14,36 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with CannonLaunch.  If not, see <http://www.gnu.org/licenses/>.
-#include "Lib/src/core/scene.hpp"
+#include "Lib/src/core/texture.hpp"
 
 #include <SDL2/SDL_image.h>
 
-void Scene::Render()
+Texture::Texture(const std::string &texturePath, SDL_Rect *textureBox, SDL_Renderer *renderer)
 {
-    for (const auto &object : objects)
-    {
-        object->Render();
-    }
+    mRenderer = renderer;
+    mTextureBox = textureBox;
+    mTexture = IMG_LoadTexture(mRenderer, texturePath.c_str());
+}
+
+Texture::~Texture()
+{
+    SDL_DestroyTexture(mTexture);
+}
+
+void Texture::Rotate(float angle)
+{
+    SDL_RenderCopyEx(mRenderer, mTexture, NULL, mTextureBox, angle, NULL, SDL_FLIP_NONE);
+}
+
+void Texture::Move(SDL_Point newPosition)
+{
+    mTextureBox->x = newPosition.x;
+    mTextureBox->y = newPosition.y;
+}
+
+void Texture::Render()
+{
+    if (!mTexture)
+        return;
+    SDL_RenderCopy(mRenderer, mTexture, NULL, mTextureBox);
 }

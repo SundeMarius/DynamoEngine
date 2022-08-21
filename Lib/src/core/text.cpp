@@ -18,13 +18,13 @@
 
 Text::~Text()
 {
-    SDL_FreeSurface(textSurface);
     SDL_DestroyTexture(textTexture);
 }
 
-void Text::Display(TTF_Font *font, SDL_Renderer *renderer)
+void Text::Render(TTF_Font *font, SDL_Renderer *renderer)
 {
-    textSurface = TTF_RenderText_Solid(font, text.c_str(), color);
+    SDL_Surface *textSurface = TTF_RenderText_Solid(font, text.c_str(), color);
     textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
     SDL_RenderCopy(renderer, textTexture, NULL, &textBox);
+    SDL_FreeSurface(textSurface);
 }

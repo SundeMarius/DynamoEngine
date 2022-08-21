@@ -16,29 +16,26 @@
 // along with Lib.  If not, see <http://www.gnu.org/licenses/>.
 #pragma once
 
+#include "Lib/src/core/texture.hpp"
+
 #include "SDL2/SDL.h"
 #include <SDL2/SDL_ttf.h>
+
 #include <string>
+#include <memory>
 
 class Text
 {
 public:
-    Text(
-        const std::string &text,
-        SDL_Rect textBox) : text(text), textBox(textBox), color{255, 255, 255, 0} {}
-    Text(
-        const std::string &text,
-        SDL_Rect textBox,
-        SDL_Color color) : text(text), textBox(textBox), color(color) {}
+    Text(const std::string &text, SDL_Rect textBox, SDL_Color color) : text(text), color(color), textBox(textBox) {}
+    Text(const std::string &text, SDL_Rect textBox) : Text(text, textBox, {255, 255, 255, 0}) {}
     ~Text();
 
-    void Display(TTF_Font *font, SDL_Renderer *renderer);
+    void Render(TTF_Font *font, SDL_Renderer *renderer);
 
 private:
     std::string text;
-    SDL_Rect textBox;
     SDL_Color color;
-
-    SDL_Surface *textSurface;
+    SDL_Rect textBox;
     SDL_Texture *textTexture;
 };

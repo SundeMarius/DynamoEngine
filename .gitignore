@@ -33,3 +33,7 @@
 
 # vscode
 .vscode/
+
+# assets
+*.png
+*.log

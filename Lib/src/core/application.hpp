@@ -16,6 +16,7 @@
 // along with Projects.  If not, see <http://www.gnu.org/licenses/>.
 #pragma once
 
+#include "Lib/src/core/resourceloader.hpp"
 #include "Lib/src/core/timestep.hpp"
 #include "Lib/src/core/scene.hpp"
 #include "Lib/src/log/log.hpp"
@@ -24,6 +25,7 @@
 #include <SDL2/SDL.h>
 
 #include <string>
+#include <memory>
 
 struct ApplicationCommandLineArguments
 {
@@ -38,10 +40,7 @@ struct ApplicationSpecification
     int width = 1600;
     int height = 900;
 
-    std::string fontFile = "assets/fonts/roboto/Roboto-Medium.ttf";
-    TTF_Font *font = nullptr;
-
-    bool displayFPS = true;
+    bool RenderFPS = true;
     ApplicationCommandLineArguments args{};
 
     std::string logFile = "./app.log";
@@ -50,7 +49,7 @@ struct ApplicationSpecification
 class Application
 {
 public:
-    Application(const ApplicationSpecification &specification) : spec(specification), appLog(spec.logFile) {}
+    Application(ApplicationSpecification spec, ResourceSpecification rSpec);
     virtual ~Application();
 
     int Start();
@@ -59,7 +58,7 @@ public:
 
     int GetFPS();
 
-    void ToggleFPSCounter() { spec.displayFPS = !spec.displayFPS; }
+    void ToggleFPSCounter() { spec.RenderFPS = !spec.RenderFPS; }
 
 protected:
     bool Init();
@@ -68,12 +67,10 @@ protected:
 
     virtual void Update(const Timestep &dt) = 0;
 
-    virtual void Display() = 0;
+    virtual void Render();
 
 private:
-    ApplicationSpecification spec{};
-    Log appLog;
-
+    ApplicationSpecification spec;
     bool running = true;
     bool init = false;
 
@@ -81,9 +78,14 @@ private:
     SDL_Window *window = nullptr;
     Timestep frameTime{};
 
+    Log appLog;
+
+    std::unique_ptr<ResourceLoader> resources;
+    std::shared_ptr<Font> font;
+    std::shared_ptr<Texture> backgroundTexture;
+
     Scene scene;
 
 private:
-    bool InitializeFont();
-    void DisplayFPS();
+    void RenderFPS();
 };

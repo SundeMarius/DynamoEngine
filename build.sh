@@ -16,5 +16,5 @@
 # along with CannonLaunch.  If not, see <http://www.gnu.org/licenses/>.
 #!/usr/bin/env sh
 
-cd Lib && make -j && cd ..
-cd Game && make -j && cd .. && echo "Build complete!"
+cd Lib && make -Bj && cd ..
+cd Game && make -Bj && cd .. && echo "Build complete!"

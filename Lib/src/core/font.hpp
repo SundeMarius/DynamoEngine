@@ -16,20 +16,18 @@
 // along with CannonLaunch.  If not, see <http://www.gnu.org/licenses/>.
 #pragma once
 
+#include <SDL2/SDL_ttf.h>
+
 #include <string>
 
-#include <SDL2/SDL.h>
-
-class Image
+class Font
 {
 public:
-    Image(const std::string &imagePath, SDL_Rect imageDescription, SDL_Renderer *renderer);
-    ~Image();
+    Font(const std::string &fontFile);
+    ~Font();
 
-    void Render();
+    TTF_Font *GetTTFFont() const { return font; }
 
 private:
-    SDL_Rect mImageBox;
-    SDL_Texture *mTexture;
-    SDL_Renderer *mRenderer;
+    TTF_Font *font;
 };

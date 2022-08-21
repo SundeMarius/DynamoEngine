@@ -1,9 +1,9 @@
 CXX := clang++
 CXXFLAGS := -std=c++20 -I.. -ggdb
 WARNING := -Wall -Wextra -pedantic
-LDLIBS := ../Lib/CannonLaunchLib.a -lSDL2 -lSDL2_ttf
+LDLIBS := ../Lib/CannonLaunchLib.a -lSDL2 -lSDL2_ttf -lSDL2_image
 
-SRCS := $(shell find .. -name '*.cpp')
+SRCS := $(shell find . -name '*.cpp')
 OBJS := $(patsubst %.cpp,%.o,$(SRCS))
 
 cannonlaunch: $(OBJS)

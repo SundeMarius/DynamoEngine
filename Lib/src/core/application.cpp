@@ -18,14 +18,20 @@
 #include "Lib/src/core/application.hpp"
 #include "Lib/src/core/text.hpp"
 
+#include <SDL2/SDL_image.h>
+
 #include <iostream>
+
+Application::Application(ApplicationSpecification spec, ResourceSpecification rSpec) : spec(spec), appLog(spec.logFile)
+{
+    resources = std::make_unique<ResourceLoader>(rSpec);
+}
 
 Application::~Application()
 {
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
-    TTF_CloseFont(spec.font);
-    TTF_Quit();
+    IMG_Quit();
     SDL_Quit();
     if (init)
         appLog.Trace("Application has shut down successfully");
@@ -37,13 +43,7 @@ bool Application::Init()
 {
     if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
     {
-        appLog.Error("SDL failed to initialize");
-        return false;
-    }
-
-    if (TTF_Init() < 0)
-    {
-        appLog.Error("SDL_ttf failed to initialize");
+        appLog.Fatal("SDL failed to initialize");
         return false;
     }
 
@@ -53,11 +53,10 @@ bool Application::Init()
         SDL_WINDOWPOS_CENTERED,
         spec.width,
         spec.height,
-        SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_VULKAN);
-
+        SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_OPENGL);
     if (!window)
     {
-        appLog.Error("Window failed to initialize");
+        appLog.Fatal("Window failed to initialize");
         return false;
     }
     appLog.Trace("Window system initialized");
@@ -65,22 +64,15 @@ bool Application::Init()
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
     if (!renderer)
     {
-        appLog.Error("Renderer failed to initialize");
+        appLog.Fatal("Renderer failed to initialize");
         return false;
     }
     appLog.Trace("Renderer initialized");
 
-    // Set background color
-    SDL_SetRenderDrawColor(renderer, 50, 50, 50, 255);
-
-    // Global font
-    appLog.Debug("Loading font file " + spec.fontFile);
-    if (!InitializeFont())
-    {
-        appLog.Error("Loading font failed");
-        return false;
-    }
-    appLog.Trace("Font initialized");
+    // Load application font and textures
+    resources->Init(renderer, appLog);
+    font = resources->GetFont();
+    backgroundTexture = resources->GetBackgroundTexture();
 
     return true;
 }
@@ -113,9 +105,7 @@ int Application::Start()
         Timestep dt = frameTime * 1.e-1;
         Update(dt.GetSeconds());
         SDL_RenderClear(renderer);
-        Display();
-        if (spec.displayFPS)
-            DisplayFPS();
+        Render();
         SDL_RenderPresent(renderer);
         // FPS
         frameTime = SDL_GetTicks64() - startTimeMilliSec;
@@ -127,7 +117,17 @@ int Application::Start()
 
 void Application::Close()
 {
+    appLog.Debug("Closing application");
     running = false;
+}
+
+void Application::Render()
+{
+
+    backgroundTexture->Render();
+    scene.Render();
+    if (spec.RenderFPS)
+        RenderFPS();
 }
 
 int Application::GetFPS()
@@ -139,17 +139,8 @@ int Application::GetFPS()
     }
     return fps;
 }
-void Application::DisplayFPS()
+void Application::RenderFPS()
 {
-    Text text("FPS: " + std::to_string(GetFPS()), {spec.width - 70, 0, 70, 32});
-    text.Display(spec.font, renderer);
-}
-bool Application::InitializeFont()
-{
-    spec.font = TTF_OpenFont(spec.fontFile.c_str(), 24);
-    if (!spec.font)
-    {
-        return false;
-    }
-    return true;
+    Text text("FPS: " + std::to_string(GetFPS()), {spec.width - 75, spec.height - 25, 75, 25});
+    text.Render(font->GetTTFFont(), renderer);
 }

@@ -16,28 +16,40 @@
 // along with CannonLaunch.  If not, see <http://www.gnu.org/licenses/>.
 #pragma once
 
-#include "Lib/src/entities/gameobject.hpp"
 #include "Lib/src/core/texture.hpp"
+#include "Lib/src/core/font.hpp"
+#include "Lib/src/log/log.hpp"
 
-#include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_image.h>
 
-#include <vector>
+#include <string>
 #include <memory>
-#include <algorithm>
 
-using GameObjectPtr = std::unique_ptr<GameObject>;
-using GameObjectContainer = std::vector<GameObjectPtr>;
+struct ResourceSpecification
+{
+    std::string fontFile;
+    std::string backgroundTextureFile;
+};
 
-class Scene
+class ResourceLoader
 {
 public:
-    void AddObject(GameObjectPtr object) { objects.emplace_back(std::move(object)); }
-    void RemoveObject(GameObjectPtr object) { std::erase(objects, object); }
-    const GameObjectContainer &GetGameObjects() { return objects; }
+    ResourceLoader(ResourceSpecification specification) : spec(specification) {}
+    virtual ~ResourceLoader() = default;
 
-    void Render();
+    virtual void Init(SDL_Renderer *renderer, Log &log);
+
+    std::shared_ptr<Font> GetFont() { return font; }
+    std::shared_ptr<Texture> GetBackgroundTexture() { return backgroundTexture; }
 
 private:
-    GameObjectPtr player;
-    GameObjectContainer objects;
+    void InitializeFont();
+    void LoadBackgroundTexture(SDL_Renderer *renderer);
+
+private:
+    ResourceSpecification spec;
+
+    std::shared_ptr<Font> font;
+    std::shared_ptr<Texture> backgroundTexture;
 };

@@ -14,14 +14,15 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with CannonLaunch.  If not, see <http://www.gnu.org/licenses/>.
-#include "Lib/src/core/scene.hpp"
+#include "Lib/src/core/font.hpp"
 
-#include <SDL2/SDL_image.h>
-
-void Scene::Render()
+Font::Font(const std::string &fontFile)
 {
-    for (const auto &object : objects)
-    {
-        object->Render();
-    }
+    font = TTF_OpenFont(fontFile.c_str(), 25);
+}
+
+Font::~Font()
+{
+    TTF_CloseFont(font);
+    TTF_Quit();
 }
