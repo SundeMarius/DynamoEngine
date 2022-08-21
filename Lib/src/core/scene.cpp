@@ -20,6 +20,7 @@
 
 void Scene::Render()
 {
+    resources->UseBackgroundTexture()->Render();
     for (const auto &object : objects)
     {
         object->Render();

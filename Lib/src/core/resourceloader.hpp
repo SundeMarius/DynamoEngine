@@ -25,6 +25,7 @@
 
 #include <string>
 #include <memory>
+#include <unordered_map>
 
 struct ResourceSpecification
 {
@@ -32,16 +33,18 @@ struct ResourceSpecification
     std::string backgroundTextureFile;
 };
 
+using Resources = std::unordered_map<std::string, std::unique_ptr<ResourceSpecification>>;
+
 class ResourceLoader
 {
 public:
-    ResourceLoader(ResourceSpecification specification) : spec(specification) {}
+    ResourceLoader(ResourceSpecification &specification) : spec(specification) {}
     virtual ~ResourceLoader() = default;
 
-    virtual void Init(SDL_Renderer *renderer, Log &log);
+    virtual bool Init(SDL_Renderer *renderer, Log &log);
 
-    std::shared_ptr<Font> GetFont() { return font; }
-    std::shared_ptr<Texture> GetBackgroundTexture() { return backgroundTexture; }
+    std::shared_ptr<Font> UseFont() { return font; }
+    std::shared_ptr<Texture> UseBackgroundTexture() { return backgroundTexture; }
 
 private:
     void InitializeFont();

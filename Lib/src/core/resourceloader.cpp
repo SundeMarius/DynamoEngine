@@ -18,7 +18,9 @@
 
 #include <SDL2/SDL_image.h>
 
-void ResourceLoader::Init(SDL_Renderer *renderer, Log &log)
+// TODO: handle or throw new exceptions
+
+bool ResourceLoader::Init(SDL_Renderer *renderer, Log &log)
 {
     // Initialize texture settings
     IMG_Init(IMG_INIT_PNG);
@@ -27,18 +29,31 @@ void ResourceLoader::Init(SDL_Renderer *renderer, Log &log)
     if (TTF_Init() < 0)
     {
         log.Fatal("SDL_ttf failed to initialize");
+        return false;
     }
-    log.Debug("Loading font file " + spec.fontFile);
-    InitializeFont();
-    log.Trace("Font initialized");
 
-    // Load background
-    if (!spec.backgroundTextureFile.empty())
+    log.Trace("Loading application resources");
+    try
     {
-        log.Trace("Loading background texture from " + spec.backgroundTextureFile);
-        LoadBackgroundTexture(renderer);
-        log.Trace("Background texture initialized");
+        log.Debug("Loading font file " + spec.fontFile);
+        InitializeFont();
+        log.Debug("Font initialized");
+
+        // Load background
+        if (!spec.backgroundTextureFile.empty())
+        {
+            log.Debug("Loading background texture from " + spec.backgroundTextureFile);
+            LoadBackgroundTexture(renderer);
+            log.Debug("Background texture initialized");
+        }
     }
+    catch (const std::exception &e)
+    {
+        log.Error(e.what());
+        return false;
+    }
+    log.Trace("Application resources loaded successfully");
+    return true;
 }
 
 void ResourceLoader::InitializeFont()

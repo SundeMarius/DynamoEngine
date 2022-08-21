@@ -31,3 +31,19 @@ public:
 private:
     TTF_Font *font;
 };
+
+class FontInitializationError : public std::exception
+{
+public:
+    FontInitializationError(const std::string &errorMessage)
+    {
+        msg = errorMessage;
+    }
+    const char *what() const throw()
+    {
+        return msg.c_str();
+    }
+
+private:
+    std::string msg;
+};

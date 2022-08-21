@@ -10,10 +10,10 @@ LIBNAME := CannonLaunchLib.a
 all: $(LIBNAME)
 
 $(LIBNAME): $(OBJS)
-	ar rcs $@ $?
+	ar rcs $@ $^
 
 clean:
 	rm -f $(OBJS) $(LIBNAME)
 
-%.o: %.cpp Makefile
+%.o: %.cpp %.hpp Makefile
 	$(CXX) $(WARNING) $(CXXFLAGS) -c $< -o $@

@@ -20,11 +20,11 @@
 class CannonLaunchGame : public Application
 {
 public:
-    CannonLaunchGame(ApplicationSpecification specification, ResourceSpecification resources) : Application(specification, resources) {}
+    CannonLaunchGame(ApplicationSpecification &specification, ResourceSpecification &resources) : Application(specification, resources) {}
 
-    void OnEvent(SDL_Event *event) {}
+    virtual void OnEvent(SDL_Event *event);
 
-    void Update(const Timestep &dt) {}
+    virtual void Update(const Timestep &dt);
 
 private:
 };

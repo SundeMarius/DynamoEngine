@@ -16,13 +16,15 @@
 // along with CannonLaunch.  If not, see <http://www.gnu.org/licenses/>.
 #include "Lib/src/core/font.hpp"
 
+// TODO: exceptions
 Font::Font(const std::string &fontFile)
 {
     font = TTF_OpenFont(fontFile.c_str(), 25);
+    if (!font)
+        throw FontInitializationError(SDL_GetError());
 }
 
 Font::~Font()
 {
     TTF_CloseFont(font);
-    TTF_Quit();
 }

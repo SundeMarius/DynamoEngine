@@ -18,11 +18,14 @@
 
 #include <SDL2/SDL_image.h>
 
+// TODO: exceptions
 Texture::Texture(const std::string &texturePath, SDL_Rect *textureBox, SDL_Renderer *renderer)
 {
     mRenderer = renderer;
     mTextureBox = textureBox;
     mTexture = IMG_LoadTexture(mRenderer, texturePath.c_str());
+    if (!mTexture)
+        throw TextureInitializationError(SDL_GetError());
 }
 
 Texture::~Texture()

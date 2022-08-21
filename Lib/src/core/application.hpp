@@ -32,7 +32,7 @@ struct ApplicationCommandLineArguments
     int count = 0;
     char **argv = nullptr;
 };
-
+// dd
 struct ApplicationSpecification
 {
     std::string name = "Example application";
@@ -49,7 +49,8 @@ struct ApplicationSpecification
 class Application
 {
 public:
-    Application(ApplicationSpecification spec, ResourceSpecification rSpec);
+    Application(ApplicationSpecification &spec, ResourceSpecification &resources)
+        : spec(spec), appLog(spec.logFile), scene(resources) {}
     virtual ~Application();
 
     int Start();
@@ -63,29 +64,25 @@ public:
 protected:
     bool Init();
 
+    void Render();
+
     virtual void OnEvent(SDL_Event *event) = 0;
 
     virtual void Update(const Timestep &dt) = 0;
 
-    virtual void Render();
-
-private:
+protected:
     ApplicationSpecification spec;
-    bool running = true;
-    bool init = false;
-
     SDL_Renderer *renderer = nullptr;
     SDL_Window *window = nullptr;
-    Timestep frameTime{};
 
     Log appLog;
-
-    std::unique_ptr<ResourceLoader> resources;
-    std::shared_ptr<Font> font;
-    std::shared_ptr<Texture> backgroundTexture;
 
     Scene scene;
 
 private:
+    bool running = true;
+    bool init = false;
+    Timestep frameTime{};
+
     void RenderFPS();
 };

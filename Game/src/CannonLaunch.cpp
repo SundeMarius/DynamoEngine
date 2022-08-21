@@ -14,8 +14,10 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with CannonLaunch.  If not, see <http://www.gnu.org/licenses/>.
-#include "Lib/src/core/entrypoint.hpp"
 #include "CannonLaunch.hpp"
+
+#include "Lib/src/core/entrypoint.hpp"
+#include "Lib/src/core/text.hpp"
 
 Application *CreateApplication(ApplicationCommandLineArguments args)
 {
@@ -31,10 +33,10 @@ Application *CreateApplication(ApplicationCommandLineArguments args)
     return new CannonLaunchGame(spec, rspec);
 }
 
-/* void OnEvent(SDL_Event *event)
+void CannonLaunchGame::OnEvent(SDL_Event *event)
 {
 }
 
-void Update(const Timestep &dt)
+void CannonLaunchGame::Update(const Timestep &dt)
 {
-} */
+}

@@ -1,18 +1,16 @@
 CXX := clang++
 CXXFLAGS := -std=c++20 -I.. -ggdb
 WARNING := -Wall -Wextra -pedantic
-LDLIBS := ../Lib/CannonLaunchLib.a -lSDL2 -lSDL2_ttf -lSDL2_image
+LDLIBS := -lSDL2 -lSDL2_ttf -lSDL2_image
+GAMELIB := ../Lib/CannonLaunchLib.a
 
 SRCS := $(shell find . -name '*.cpp')
 OBJS := $(patsubst %.cpp,%.o,$(SRCS))
 
-cannonlaunch: $(OBJS)
+cannonlaunch: $(OBJS) $(GAMELIB)
 	$(CXX) -o $@ $^ $(LDLIBS)
 
-run: cannonlaunch
-	./cannonlaunch
-
-%.o: %.cpp Makefile
+%.o: %.cpp %.hpp Makefile
 	$(CXX) $(WARNING) $(CXXFLAGS) -c $< -o $@
 
 clean:

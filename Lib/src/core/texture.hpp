@@ -37,3 +37,19 @@ private:
     SDL_Texture *mTexture = nullptr;
     SDL_Renderer *mRenderer = nullptr;
 };
+
+class TextureInitializationError : public std::exception
+{
+public:
+    TextureInitializationError(const std::string &errorMessage)
+    {
+        msg = errorMessage;
+    }
+    const char *what() const throw()
+    {
+        return msg.c_str();
+    }
+
+private:
+    std::string msg;
+};

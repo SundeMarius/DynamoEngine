@@ -22,15 +22,11 @@
 
 #include <iostream>
 
-Application::Application(ApplicationSpecification spec, ResourceSpecification rSpec) : spec(spec), appLog(spec.logFile)
-{
-    resources = std::make_unique<ResourceLoader>(rSpec);
-}
-
 Application::~Application()
 {
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
+    TTF_Quit();
     IMG_Quit();
     SDL_Quit();
     if (init)
@@ -69,25 +65,21 @@ bool Application::Init()
     }
     appLog.Trace("Renderer initialized");
 
-    // Load application font and textures
-    resources->Init(renderer, appLog);
-    font = resources->GetFont();
-    backgroundTexture = resources->GetBackgroundTexture();
-
     return true;
 }
 
 int Application::Start()
 {
     appLog.Trace("Starting application '" + spec.name + "'");
-    if (!(init = Init()))
+    // Init app first, then init resources if success
+    if (!(init = Init() && scene.Resources()->Init(renderer, appLog)))
     {
         std::cerr << "Fatal error occured -- see log file " << spec.logFile << std::endl;
         return -1;
     }
     appLog.Success("Application initialized successfully");
 
-    appLog.Debug("Starting main application loop");
+    appLog.Debug("Starting application loop");
     SDL_Event event;
     while (running)
     {
@@ -110,24 +102,14 @@ int Application::Start()
         // FPS
         frameTime = SDL_GetTicks64() - startTimeMilliSec;
     }
-    appLog.Debug("Main application loop finished");
+    appLog.Debug("Application loop finished");
 
     return 0;
 }
 
 void Application::Close()
 {
-    appLog.Debug("Closing application");
     running = false;
-}
-
-void Application::Render()
-{
-
-    backgroundTexture->Render();
-    scene.Render();
-    if (spec.RenderFPS)
-        RenderFPS();
 }
 
 int Application::GetFPS()
@@ -139,8 +121,16 @@ int Application::GetFPS()
     }
     return fps;
 }
+
+void Application::Render()
+{
+    scene.Render();
+    if (spec.RenderFPS)
+        RenderFPS();
+}
+
 void Application::RenderFPS()
 {
     Text text("FPS: " + std::to_string(GetFPS()), {spec.width - 75, spec.height - 25, 75, 25});
-    text.Render(font->GetTTFFont(), renderer);
+    text.Render(scene.Resources()->UseFont()->GetTTFFont(), renderer);
 }

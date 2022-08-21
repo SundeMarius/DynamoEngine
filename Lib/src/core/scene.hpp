@@ -17,6 +17,7 @@
 #pragma once
 
 #include "Lib/src/entities/gameobject.hpp"
+#include "Lib/src/core/resourceloader.hpp"
 #include "Lib/src/core/texture.hpp"
 
 #include <SDL2/SDL.h>
@@ -31,13 +32,28 @@ using GameObjectContainer = std::vector<GameObjectPtr>;
 class Scene
 {
 public:
-    void AddObject(GameObjectPtr object) { objects.emplace_back(std::move(object)); }
-    void RemoveObject(GameObjectPtr object) { std::erase(objects, object); }
-    const GameObjectContainer &GetGameObjects() { return objects; }
+    Scene(ResourceSpecification &rSpec) : resources(std::make_unique<ResourceLoader>(rSpec)) {}
+
+    void AddObject(GameObjectPtr object)
+    {
+        objects.emplace_back(std::move(object));
+    }
+    void RemoveObject(GameObjectPtr object)
+    {
+        std::erase(objects, object);
+    }
+    const GameObjectContainer &GetGameObjects()
+    {
+        return objects;
+    }
 
     void Render();
+
+    std::unique_ptr<ResourceLoader> &Resources() { return resources; }
 
 private:
     GameObjectPtr player;
     GameObjectContainer objects;
+
+    std::unique_ptr<ResourceLoader> resources;
 };
