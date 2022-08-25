@@ -22,7 +22,7 @@
 class Log
 {
 public:
-    Log(const std::string &filename, bool coloredOutput = true) : file(filename), color(coloredOutput) {}
+    Log(const std::string &filePath, bool coloredOutput = true) : file(filePath), color(coloredOutput) {}
 
     void Debug(const std::string &message);
     void Trace(const std::string &message);

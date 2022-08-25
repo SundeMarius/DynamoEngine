@@ -10,7 +10,7 @@ LIBNAME := CannonLaunchLib.a
 all: $(LIBNAME)
 
 $(LIBNAME): $(OBJS)
-	ar rcs $@ $^
+	ar rcs $@ $(OBJS)
 
 clean:
 	rm -f $(OBJS) $(LIBNAME)

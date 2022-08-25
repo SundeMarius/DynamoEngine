@@ -22,88 +22,68 @@
 
 #include <iostream>
 
+Application::Application(const WindowSpecification &windowSpec,
+                         const ApplicationSpecification &applicationSpec)
+    : window(windowSpec), appSpec(applicationSpec), winSpec(windowSpec), appLog(appSpec.logFile)
+{
+    appLog.Trace("Starting application: " + winSpec.name);
+    if (!Init())
+        throw std::runtime_error("Fatal error occured -- see log file " + appSpec.logFile);
+    appLog.Success("Application initialized successfully");
+}
+
 Application::~Application()
 {
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
     TTF_Quit();
     IMG_Quit();
-    SDL_Quit();
-    if (init)
-        appLog.Trace("Application has shut down successfully");
-    else
-        appLog.Fatal("Application could not start due to errors in initialization.");
+    appLog.Trace("Application has shut down");
 }
 
 bool Application::Init()
 {
-    if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
+    window.Init();
+    // Initialize texture settings
+    if (IMG_Init(IMG_INIT_PNG | IMG_INIT_JPG) == 0)
     {
-        appLog.Fatal("SDL failed to initialize");
+        appLog.Fatal(IMG_GetError());
         return false;
     }
-
-    window = SDL_CreateWindow(
-        spec.name.c_str(),
-        SDL_WINDOWPOS_CENTERED,
-        SDL_WINDOWPOS_CENTERED,
-        spec.width,
-        spec.height,
-        SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_OPENGL);
-    if (!window)
+    // Initialize font settings
+    if (TTF_Init() < 0)
     {
-        appLog.Fatal("Window failed to initialize");
+        appLog.Fatal(IMG_GetError());
         return false;
     }
-    appLog.Trace("Window system initialized");
-
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
-    if (!renderer)
-    {
-        appLog.Fatal("Renderer failed to initialize");
-        return false;
-    }
-    appLog.Trace("Renderer initialized");
-
     return true;
 }
 
 int Application::Start()
 {
-    appLog.Trace("Starting application '" + spec.name + "'");
-    // Init app first, then init resources if success
-    if (!(init = Init() && scene.Resources()->Init(renderer, appLog)))
-    {
-        std::cerr << "Fatal error occured -- see log file " << spec.logFile << std::endl;
-        return -1;
-    }
-    appLog.Success("Application initialized successfully");
-
-    appLog.Debug("Starting application loop");
     SDL_Event event;
     while (running)
     {
-        uint64_t startTimeMilliSec = SDL_GetTicks64();
-        while (SDL_PollEvent(&event))
+        try
         {
-            if (event.type == SDL_QUIT)
+            uint64_t startTimeMilliSec = SDL_GetTicks64();
+            while (SDL_PollEvent(&event))
             {
-                appLog.Debug("Event registered: EXIT");
-                Close();
+                OnEvent(&event);
             }
-            OnEvent(&event);
+            // Update time step is set to frame time in seconds
+            SDL_RenderClear(window.GetRenderer());
+            Update(frameTime);
+            Render();
+            SDL_RenderPresent(window.GetRenderer());
+            // FPS
+            frameTime = SDL_GetTicks64() - startTimeMilliSec;
+            // Keep last frame time in window object
+            window.SetFrameTime(frameTime);
         }
-        // update timeStep is set to frame time in seconds
-        Timestep dt = frameTime * 1.e-1;
-        Update(dt.GetSeconds());
-        SDL_RenderClear(renderer);
-        Render();
-        SDL_RenderPresent(renderer);
-        // FPS
-        frameTime = SDL_GetTicks64() - startTimeMilliSec;
+        catch (const std::exception &e)
+        {
+            appLog.Error(e.what());
+        }
     }
-    appLog.Debug("Application loop finished");
-
     return 0;
 }
 
@@ -120,17 +100,4 @@ int Application::GetFPS()
         appLog.Warning("Performance issues (" + std::to_string(fps) + " FPS)");
     }
     return fps;
-}
-
-void Application::Render()
-{
-    scene.Render();
-    if (spec.RenderFPS)
-        RenderFPS();
-}
-
-void Application::RenderFPS()
-{
-    Text text("FPS: " + std::to_string(GetFPS()), {spec.width - 75, spec.height - 25, 75, 25});
-    text.Render(scene.Resources()->UseFont()->GetTTFFont(), renderer);
 }

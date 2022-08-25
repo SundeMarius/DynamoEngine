@@ -18,7 +18,7 @@
 
 #include "Lib/src/utilities/uuid.hpp"
 #include "Lib/src/core/timestep.hpp"
-#include "Lib/src/core/texture.hpp"
+#include "Lib/src/core/sprite.hpp"
 
 #include <glm/glm.hpp>
 
@@ -40,8 +40,6 @@ public:
     const UUID &id() const { return objectId; }
 
 private:
-    std::shared_ptr<Texture> texture;
-
     UUID objectId{};
 
     glm::vec2 pos{};

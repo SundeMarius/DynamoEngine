@@ -16,21 +16,30 @@
 // along with CannonLaunch.  If not, see <http://www.gnu.org/licenses/>.
 #pragma once
 
-#include "Lib/src/core/timestep.hpp"
 #include "Lib/src/core/window.hpp"
 
-class Scene
+#include <string>
+
+class Asset
 {
 public:
-    virtual ~Scene() = default;
+    virtual ~Asset() = default;
 
-    virtual bool Init() = 0;
+    virtual bool LoadFromFile(const std::string &filePath) = 0;
+};
 
-    virtual void Activate() {}
+class AssetInitializationError : public std::exception
+{
+public:
+    AssetInitializationError(const std::string &errorMessage)
+    {
+        msg = errorMessage;
+    }
+    const char *what() const throw()
+    {
+        return msg.c_str();
+    }
 
-    virtual void Deactivate() {}
-
-    virtual void Update(const Timestep &dt) {}
-
-    virtual void Render() {}
+private:
+    std::string msg;
 };

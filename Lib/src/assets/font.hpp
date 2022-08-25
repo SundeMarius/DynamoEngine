@@ -14,15 +14,41 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with CannonLaunch.  If not, see <http://www.gnu.org/licenses/>.
-#include "Lib/src/core/scene.hpp"
+#pragma once
 
-#include <SDL2/SDL_image.h>
+#include "Lib/src/assets/asset.hpp"
 
-void Scene::Render()
+#include <SDL2/SDL_ttf.h>
+
+#include <string>
+
+class Font : public Asset
 {
-    resources->UseBackgroundTexture()->Render();
-    for (const auto &object : objects)
+public:
+    Font() = default;
+    ~Font();
+
+    bool LoadFromFile(const std::string &filePath) override;
+
+    TTF_Font *GetTTFFont() const { return font; }
+
+private:
+    TTF_Font *font = nullptr;
+    int size = 20;
+};
+
+class FontInitializationError : public std::exception
+{
+public:
+    FontInitializationError(const std::string &errorMessage)
     {
-        object->Render();
+        msg = errorMessage;
     }
-}
+    const char *what() const throw()
+    {
+        return msg.c_str();
+    }
+
+private:
+    std::string msg;
+};

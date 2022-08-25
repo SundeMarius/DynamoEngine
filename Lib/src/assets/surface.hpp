@@ -16,21 +16,22 @@
 // along with CannonLaunch.  If not, see <http://www.gnu.org/licenses/>.
 #pragma once
 
-#include "Lib/src/core/timestep.hpp"
-#include "Lib/src/core/window.hpp"
+#include "Lib/src/assets/asset.hpp"
 
-class Scene
+#include <string>
+
+#include <SDL2/SDL.h>
+
+class Surface : public Asset
 {
 public:
-    virtual ~Scene() = default;
+    Surface() = default;
+    ~Surface();
 
-    virtual bool Init() = 0;
+    bool LoadFromFile(const std::string &filePath) override;
 
-    virtual void Activate() {}
+    SDL_Surface *GetSDLSurface() { return mSurface; }
 
-    virtual void Deactivate() {}
-
-    virtual void Update(const Timestep &dt) {}
-
-    virtual void Render() {}
+private:
+    SDL_Surface *mSurface = nullptr;
 };

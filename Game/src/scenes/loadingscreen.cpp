@@ -14,23 +14,3 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with CannonLaunch.  If not, see <http://www.gnu.org/licenses/>.
-#pragma once
-
-#include "Lib/src/core/timestep.hpp"
-#include "Lib/src/core/window.hpp"
-
-class Scene
-{
-public:
-    virtual ~Scene() = default;
-
-    virtual bool Init() = 0;
-
-    virtual void Activate() {}
-
-    virtual void Deactivate() {}
-
-    virtual void Update(const Timestep &dt) {}
-
-    virtual void Render() {}
-};

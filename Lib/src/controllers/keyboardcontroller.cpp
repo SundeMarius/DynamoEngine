@@ -14,42 +14,21 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with CannonLaunch.  If not, see <http://www.gnu.org/licenses/>.
-#pragma once
+#include "Lib/src/controllers/keyboardcontroller.hpp"
 
-#include <string>
-
-#include <SDL2/SDL.h>
-
-class Texture
+bool KeyboardController::IsKeyPressed(SDL_KeyboardEvent *keyEvent, Key key)
 {
-public:
-    Texture(const std::string &texturePath, SDL_Rect *textureBox, SDL_Renderer *renderer);
-    ~Texture();
-
-    void Rotate(float angle);
-
-    void Move(SDL_Point newPosition);
-
-    void Render();
-
-private:
-    SDL_Rect *mTextureBox = nullptr;
-    SDL_Texture *mTexture = nullptr;
-    SDL_Renderer *mRenderer = nullptr;
-};
-
-class TextureInitializationError : public std::exception
+    return keyEvent->state == SDL_PRESSED && keyEvent->keysym.scancode == key;
+}
+bool KeyboardController::IsKeyReleased(SDL_KeyboardEvent *keyEvent, Key key)
 {
-public:
-    TextureInitializationError(const std::string &errorMessage)
-    {
-        msg = errorMessage;
-    }
-    const char *what() const throw()
-    {
-        return msg.c_str();
-    }
-
-private:
-    std::string msg;
-};
+    return keyEvent->state == SDL_RELEASED && keyEvent->keysym.scancode == key;
+}
+bool KeyboardController::IsKeyDown(SDL_KeyboardEvent *keyEvent, Key key)
+{
+    return keyEvent->type == SDL_KEYDOWN && keyEvent->keysym.scancode == key;
+}
+bool KeyboardController::IsKeyUp(SDL_KeyboardEvent *keyEvent, Key key)
+{
+    return keyEvent->type == SDL_KEYUP && keyEvent->keysym.scancode == key;
+}

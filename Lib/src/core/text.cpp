@@ -16,15 +16,27 @@
 // along with CannonLaunch.  If not, see <http://www.gnu.org/licenses/>.
 #include "Lib/src/core/text.hpp"
 
+Text::Text(Window &window, const std::string &text, TextSpecification specification) : text(text), spec(specification), textRenderer(window.GetRenderer())
+{
+    SDL_Surface *textSurface = TTF_RenderText_Solid(spec.font->GetTTFFont(), text.c_str(), spec.color);
+    textTexture = SDL_CreateTextureFromSurface(textRenderer, textSurface);
+    SDL_FreeSurface(textSurface);
+}
+
 Text::~Text()
 {
     SDL_DestroyTexture(textTexture);
 }
 
-void Text::Render(TTF_Font *font, SDL_Renderer *renderer)
+void Text::SetText(const std::string &newText)
 {
-    SDL_Surface *textSurface = TTF_RenderText_Solid(font, text.c_str(), color);
-    textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
-    SDL_RenderCopy(renderer, textTexture, NULL, &textBox);
+    text = newText;
+    SDL_Surface *textSurface = TTF_RenderText_Solid(spec.font->GetTTFFont(), text.c_str(), spec.color);
+    textTexture = SDL_CreateTextureFromSurface(textRenderer, textSurface);
     SDL_FreeSurface(textSurface);
+}
+
+void Text::Render()
+{
+    SDL_RenderCopy(textRenderer, textTexture, NULL, &spec.box);
 }

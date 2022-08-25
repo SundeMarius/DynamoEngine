@@ -15,28 +15,55 @@
 // You should have received a copy of the GNU General Public License
 // along with CannonLaunch.  If not, see <http://www.gnu.org/licenses/>.
 #include "CannonLaunch.hpp"
+#include "scenes/splashscreen.hpp"
 
 #include "Lib/src/core/entrypoint.hpp"
 #include "Lib/src/core/text.hpp"
 
-Application *CreateApplication(ApplicationCommandLineArguments args)
+CannonLaunchGame::CannonLaunchGame(const WindowSpecification &windowSpec,
+                                   const ApplicationSpecification &applicationSpec) : Application(windowSpec, applicationSpec)
 {
-    ApplicationSpecification spec = {
-        .name = "Cannon Launch!",
-        .RenderFPS = true,
-        .args = args,
-    };
-    ResourceSpecification rspec = {
-        .fontFile = "assets/fonts/open-sans/OpenSans-Regular.ttf",
-        .backgroundTextureFile = "assets/images/craftpix-402033-free-horizontal-2d-game-backgrounds/PNG/game_background_1/game_background_1.png",
-    };
-    return new CannonLaunchGame(spec, rspec);
+    try
+    {
+        std::unique_ptr<Scene> splashScreen = std::make_unique<SplashScreen>(window, 1);
+        int splashScreenID = sceneManager.AddScene(splashScreen);
+        sceneManager.SwitchScene(splashScreenID);
+    }
+    catch (const std::exception &e)
+    {
+        appLog.Warning(e.what());
+        std::cerr << e.what() << std::endl;
+    }
 }
 
 void CannonLaunchGame::OnEvent(SDL_Event *event)
 {
+    if (event->type == SDL_QUIT)
+    {
+        Close();
+    }
 }
 
 void CannonLaunchGame::Update(const Timestep &dt)
 {
+    sceneManager.Update(dt);
+}
+
+void CannonLaunchGame::Render()
+{
+    sceneManager.Render();
+}
+
+Application *CreateApplication(ApplicationCommandLineArguments args)
+{
+    WindowSpecification windowSpec = {
+        .name = "Cannon hell",
+        .width = 1920,
+        .height = 1080,
+    };
+    ApplicationSpecification appSpec = {
+        .ShowFPSCounter = true,
+        .args = args,
+    };
+    return new CannonLaunchGame(windowSpec, appSpec);
 }

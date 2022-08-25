@@ -16,21 +16,28 @@
 // along with CannonLaunch.  If not, see <http://www.gnu.org/licenses/>.
 #pragma once
 
-#include "Lib/src/core/timestep.hpp"
 #include "Lib/src/core/window.hpp"
+#include "Lib/src/assets/surface.hpp"
 
-class Scene
+#include <SDL2/SDL.h>
+
+class Sprite
 {
 public:
-    virtual ~Scene() = default;
+    Sprite(Window &window, Surface *surface, SDL_Rect spriteBox);
+    virtual ~Sprite();
 
-    virtual bool Init() = 0;
+    void Rotate(float angle);
 
-    virtual void Activate() {}
+    void Move(const SDL_Point &newPosition);
 
-    virtual void Deactivate() {}
+    void Render();
 
-    virtual void Update(const Timestep &dt) {}
+private:
+    SDL_Renderer *mRenderer;
+    SDL_Texture *mTexture;
 
-    virtual void Render() {}
+    Surface mSurface;
+
+    SDL_Rect spriteBox;
 };

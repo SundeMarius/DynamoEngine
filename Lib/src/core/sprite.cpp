@@ -14,23 +14,34 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with CannonLaunch.  If not, see <http://www.gnu.org/licenses/>.
-#pragma once
+#include "Lib/src/core/sprite.hpp"
 
-#include "Lib/src/core/timestep.hpp"
-#include "Lib/src/core/window.hpp"
-
-class Scene
+Sprite::Sprite(Window &window, Surface *surface, SDL_Rect spriteBox) : mRenderer(window.GetRenderer()), spriteBox(spriteBox)
 {
-public:
-    virtual ~Scene() = default;
+    mTexture = SDL_CreateTextureFromSurface(mRenderer, surface->GetSDLSurface());
+}
 
-    virtual bool Init() = 0;
+Sprite::~Sprite()
+{
+    SDL_DestroyTexture(mTexture);
+}
 
-    virtual void Activate() {}
+void Sprite::Rotate(float angle)
+{
+    if (!mTexture)
+        return;
+    SDL_RenderCopyEx(mRenderer, mTexture, NULL, &spriteBox, angle, NULL, SDL_FLIP_NONE);
+}
 
-    virtual void Deactivate() {}
+void Sprite::Move(const SDL_Point &newPosition)
+{
+    spriteBox.x = newPosition.x;
+    spriteBox.y = newPosition.y;
+}
 
-    virtual void Update(const Timestep &dt) {}
-
-    virtual void Render() {}
-};
+void Sprite::Render()
+{
+    if (!mTexture)
+        return;
+    SDL_RenderCopy(mRenderer, mTexture, NULL, &spriteBox);
+}

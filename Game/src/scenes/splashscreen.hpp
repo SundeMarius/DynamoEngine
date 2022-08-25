@@ -14,21 +14,46 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with CannonLaunch.  If not, see <http://www.gnu.org/licenses/>.
-#include "Lib/src/core/application.hpp"
-#include "Lib/src/core/scenemanager.hpp"
+#pragma once
 
-class CannonLaunchGame : public Application
+#include "Lib/src/core/sprite.hpp"
+#include "Lib/src/core/scene.hpp"
+#include "Lib/src/assets/assetsloader.hpp"
+#include "Lib/src/assets/font.hpp"
+#include "Lib/src/core/text.hpp"
+#include "Lib/src/assets/surface.hpp"
+
+#include <map>
+
+enum class SplashSprite
+{
+    Background,
+    FpsFont
+};
+
+class SplashScreen : public Scene
 {
 public:
-    CannonLaunchGame(const WindowSpecification &windowSpec,
-                     const ApplicationSpecification &applicationSpec);
+    SplashScreen(Window &window, int switchToScene);
 
-    void OnEvent(SDL_Event *event) override;
-
+    bool Init() override;
+    void Activate() override;
     void Update(const Timestep &dt) override;
-
     void Render() override;
 
+    bool IsFinished() { return currentSeconds > showForSeconds; }
+
 private:
-    SceneManager sceneManager{};
+    Window &window;
+
+    AssetsLoader<Surface> textureLoader{};
+    AssetsLoader<Font> fontLoader{};
+    std::map<SplashSprite, int> assetIds;
+
+    std::map<SplashSprite, std::unique_ptr<Sprite>> sprites;
+    std::map<SplashSprite, std::unique_ptr<Text>> texts;
+
+    float showForSeconds;
+    float currentSeconds;
+    int switchToScene;
 };

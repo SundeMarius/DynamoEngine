@@ -16,15 +16,15 @@
 // along with Projects.  If not, see <http://www.gnu.org/licenses/>.
 #pragma once
 
-#include "Lib/src/core/resourceloader.hpp"
+#include "Lib/src/core/window.hpp"
 #include "Lib/src/core/timestep.hpp"
-#include "Lib/src/core/scene.hpp"
 #include "Lib/src/log/log.hpp"
 
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL.h>
 
 #include <string>
+#include <vector>
 #include <memory>
 
 struct ApplicationCommandLineArguments
@@ -35,54 +35,41 @@ struct ApplicationCommandLineArguments
 // dd
 struct ApplicationSpecification
 {
-    std::string name = "Example application";
-
-    int width = 1600;
-    int height = 900;
-
-    bool RenderFPS = true;
-    ApplicationCommandLineArguments args{};
-
     std::string logFile = "./app.log";
+    bool ShowFPSCounter = true;
+    ApplicationCommandLineArguments args{};
 };
 
 class Application
 {
 public:
-    Application(ApplicationSpecification &spec, ResourceSpecification &resources)
-        : spec(spec), appLog(spec.logFile), scene(resources) {}
+    Application(const WindowSpecification &windowSpec, const ApplicationSpecification &applicationSpec);
     virtual ~Application();
 
     int Start();
 
-    void Close();
-
-    int GetFPS();
-
-    void ToggleFPSCounter() { spec.RenderFPS = !spec.RenderFPS; }
-
 protected:
     bool Init();
 
-    void Render();
+    void Close();
+
+    virtual void Render() = 0;
 
     virtual void OnEvent(SDL_Event *event) = 0;
 
     virtual void Update(const Timestep &dt) = 0;
 
+    int GetFPS();
+
+    void ToggleFPSCounter() { appSpec.ShowFPSCounter = !appSpec.ShowFPSCounter; }
+
 protected:
-    ApplicationSpecification spec;
-    SDL_Renderer *renderer = nullptr;
-    SDL_Window *window = nullptr;
-
+    Window window;
+    Timestep frameTime;
+    ApplicationSpecification appSpec;
+    WindowSpecification winSpec;
     Log appLog;
-
-    Scene scene;
 
 private:
     bool running = true;
-    bool init = false;
-    Timestep frameTime{};
-
-    void RenderFPS();
 };

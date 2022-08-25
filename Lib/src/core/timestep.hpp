@@ -27,5 +27,5 @@ public:
     operator float() const { return t; }
 
 private:
-    float t;
+    float t = 0.0f;
 };

@@ -17,15 +17,26 @@
 
 #include "Lib/src/core/application.hpp"
 
+#include <iostream>
+
 extern Application *CreateApplication(ApplicationCommandLineArguments args);
 
 int main(int argc, char **argv)
 {
-    Application *app = CreateApplication({
-        .count = argc,
-        .argv = argv,
-    });
-    int runCode = app->Start();
-    delete app;
+    Application *app;
+    int runCode = 0;
+    try
+    {
+        app = CreateApplication({
+            .count = argc,
+            .argv = argv,
+        });
+        runCode = app->Start();
+        delete app;
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << e.what() << '\n';
+    }
     return runCode;
 }

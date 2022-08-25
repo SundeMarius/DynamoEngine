@@ -16,34 +16,6 @@
 // along with CannonLaunch.  If not, see <http://www.gnu.org/licenses/>.
 #pragma once
 
-#include <SDL2/SDL_ttf.h>
-
-#include <string>
-
-class Font
+class InputController
 {
-public:
-    Font(const std::string &fontFile);
-    ~Font();
-
-    TTF_Font *GetTTFFont() const { return font; }
-
-private:
-    TTF_Font *font;
-};
-
-class FontInitializationError : public std::exception
-{
-public:
-    FontInitializationError(const std::string &errorMessage)
-    {
-        msg = errorMessage;
-    }
-    const char *what() const throw()
-    {
-        return msg.c_str();
-    }
-
-private:
-    std::string msg;
 };

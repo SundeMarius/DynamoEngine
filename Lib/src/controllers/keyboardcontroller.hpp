@@ -14,17 +14,16 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with CannonLaunch.  If not, see <http://www.gnu.org/licenses/>.
-#include "Lib/src/core/font.hpp"
+#pragma once
 
-// TODO: exceptions
-Font::Font(const std::string &fontFile)
-{
-    font = TTF_OpenFont(fontFile.c_str(), 25);
-    if (!font)
-        throw FontInitializationError(SDL_GetError());
-}
+#include <SDL2/SDL.h>
 
-Font::~Font()
+class KeyboardController
 {
-    TTF_CloseFont(font);
-}
+public:
+    using Key = SDL_Scancode;
+    bool IsKeyPressed(SDL_KeyboardEvent *keyEvent, Key key);
+    bool IsKeyReleased(SDL_KeyboardEvent *keyEvent, Key key);
+    bool IsKeyDown(SDL_KeyboardEvent *keyEvent, Key key);
+    bool IsKeyUp(SDL_KeyboardEvent *keyEvent, Key key);
+};

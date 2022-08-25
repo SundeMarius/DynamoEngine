@@ -16,10 +16,29 @@
 // along with CannonLaunch.  If not, see <http://www.gnu.org/licenses/>.
 #pragma once
 
-#include <SDL2/SDL.h>
+#include "Lib/src/core/scene.hpp"
+#include "Lib/src/core/window.hpp"
 
-class KeyboardController
+#include <memory>
+#include <unordered_map>
+
+class SceneManager
 {
+    using SceneId = int;
+
 public:
-    KeyboardController();
+    SceneManager() = default;
+    ~SceneManager() = default;
+
+    SceneId AddScene(std::unique_ptr<Scene> &scene);
+    void RemoveScene(SceneId id);
+    void SwitchScene(SceneId id);
+
+    void Update(const Timestep &dt);
+    void Render();
+
+private:
+    std::unordered_map<SceneId, std::unique_ptr<Scene>> scenes;
+    Scene *currentScene = nullptr;
+    SceneId sceneId = 0;
 };
