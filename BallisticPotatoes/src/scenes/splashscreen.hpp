@@ -34,7 +34,7 @@ enum class SplashResource
 class SplashScreen : public Scene
 {
 public:
-    SplashScreen(Window &window, Log &log) : window(window), log(log), textureLoader(log), fontLoader(log) {}
+    SplashScreen(Window &window, Log &log) : window(window), log(log), surfaceLoader(log), fontLoader(log) {}
 
     bool Init() override;
     void Activate() override;
@@ -46,7 +46,7 @@ private:
     Window &window;
     Log &log;
 
-    AssetLoader<Surface> textureLoader;
+    AssetLoader<Surface> surfaceLoader;
     AssetLoader<Font> fontLoader;
     std::map<SplashResource, int> assetIds{};
 

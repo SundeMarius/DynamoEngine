@@ -18,10 +18,10 @@
 
 bool SplashScreen::Init()
 {
-    assetIds[SplashResource::SplashBackground] = textureLoader.AddAsset("assets/images/craftpix-402033-free-horizontal-2d-game-backgrounds/PNG/game_background_4/game_background_4.png");
+    assetIds[SplashResource::SplashBackground] = surfaceLoader.AddAsset("assets/images/craftpix-402033-free-horizontal-2d-game-backgrounds/PNG/game_background_4/game_background_4.png");
 
     log.Trace("Splash screen initializing...");
-    auto background = textureLoader.GetAsset(assetIds[SplashResource::SplashBackground]);
+    auto background = surfaceLoader.GetAsset(assetIds[SplashResource::SplashBackground]);
     SDL_FRect backgroundSize = {0.f, 0.f, float(window.GetWidth()), float(window.GetHeight())};
     images[SplashResource::SplashBackground] = std::make_unique<Sprite>(
         window,

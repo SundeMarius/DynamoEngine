@@ -41,7 +41,7 @@ enum class GameResource
 class GameScreen : public Scene
 {
 public:
-    GameScreen(Window &window, Log &log) : window(window), log(log), textureLoader(log), fontLoader(log) {}
+    GameScreen(Window &window, Log &log) : window(window), log(log), surfaceLoader(log), fontLoader(log) {}
 
     bool Init() override;
     void Activate() override;
@@ -50,9 +50,10 @@ public:
     void Render() override;
 
 private:
-    void AddText(GameResource type, float textPosX, float textPosY, float textWidth, float textHeight, SDL_Color color);
-    void AddImage(GameResource type, float texturePosX, float texturePosY, float textureSizeX, float textureSizeY);
-    void AddSprite(GameResource type, float texturePosX, float texturePosY, float textureSizeX, float textureSizeY);
+    void AddText(GameResource type, float posX, float posY, float width, float height, SDL_Color color);
+    void AddImage(GameResource type, float posX, float posY, float width, float height);
+    void AddSprite(GameResource type, float posX, float posY, float width, float height);
+    void AddSprite(GameResource type, float posX, float posY, float width, float height, SDL_Color color);
 
 private:
     Cannon player{};
@@ -61,7 +62,7 @@ private:
     Window &window;
     Log &log;
 
-    AssetLoader<Surface> textureLoader;
+    AssetLoader<Surface> surfaceLoader;
     AssetLoader<Font> fontLoader;
     std::map<GameResource, int> assetIds{};
 

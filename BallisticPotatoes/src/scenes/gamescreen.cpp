@@ -19,11 +19,11 @@
 bool GameScreen::Init()
 {
     assetIds[GameResource::FpsFont] = fontLoader.AddAsset("assets/fonts/open-sans/OpenSans-Semibold.ttf");
-    assetIds[GameResource::Background1] = textureLoader.AddAsset("assets/images/craftpix-402033-free-horizontal-2d-game-backgrounds/PNG/game_background_1/game_background_1.png");
-    assetIds[GameResource::Background2] = textureLoader.AddAsset("assets/images/craftpix-402033-free-horizontal-2d-game-backgrounds/PNG/game_background_2/game_background_2.png");
-    assetIds[GameResource::Background3] = textureLoader.AddAsset("assets/images/craftpix-402033-free-horizontal-2d-game-backgrounds/PNG/game_background_3/game_background_3.1.png");
-    assetIds[GameResource::Background4] = textureLoader.AddAsset("assets/images/craftpix-402033-free-horizontal-2d-game-backgrounds/PNG/game_background_4/game_background_4.png");
-    assetIds[GameResource::Ground] = textureLoader.AddAsset("assets/images/ground/grass_block.png");
+    assetIds[GameResource::Background1] = surfaceLoader.AddAsset("assets/images/craftpix-402033-free-horizontal-2d-game-backgrounds/PNG/game_background_1/game_background_1.png");
+    assetIds[GameResource::Background2] = surfaceLoader.AddAsset("assets/images/craftpix-402033-free-horizontal-2d-game-backgrounds/PNG/game_background_2/game_background_2.png");
+    assetIds[GameResource::Background3] = surfaceLoader.AddAsset("assets/images/craftpix-402033-free-horizontal-2d-game-backgrounds/PNG/game_background_3/game_background_3.1.png");
+    assetIds[GameResource::Background4] = surfaceLoader.AddAsset("assets/images/craftpix-402033-free-horizontal-2d-game-backgrounds/PNG/game_background_4/game_background_4.png");
+    assetIds[GameResource::Ground] = surfaceLoader.AddAsset("assets/images/ground/grass_block.png");
 
     int textX = window.GetWidth() * 0.96;
     int textY = 0;
@@ -42,9 +42,11 @@ bool GameScreen::Init()
     AddSprite(GameResource::Ground, groundPosX, groundPosY, groundWidth, groundHeight);
 
     // Add player
-    Sprite *playerSprite = new Sprite(window, {0.1f * window.GetWidth(), 0.1f * window.GetHeight(), 0.2f * window.GetWidth(), 0.1f * window.GetHeight()}, {200, 100, 100, 200});
-    player = Cannon({0.4 * window.GetWidth(), 0.5 * window.GetHeight()}, playerSprite);
-    player.SetVelocity({0.f, 100.f});
+    SDL_FRect playerBox = {0.1f * window.GetWidth(), 0.1f * window.GetHeight(), 0.2f * window.GetWidth(), 0.1f * window.GetHeight()};
+    SDL_Color color = {200, 100, 100, 200};
+    sprites[GameResource::CannonPlayer] = std::make_unique<Sprite>(window, playerBox, color);
+    player = Cannon({0.4 * window.GetWidth(), 0.5 * window.GetHeight()}, sprites[GameResource::CannonPlayer].get());
+    player.SetVelocity({15.f, -40.f});
 
     log.Trace("Main game screen initialized!");
     return true;
@@ -82,16 +84,23 @@ void GameScreen::AddText(GameResource type, float textPosX, float textPosY, floa
     texts[type] = std::make_unique<Text>(window, "", textSpec);
 }
 
-void GameScreen::AddImage(GameResource type, float texturePosX, float texturePosY, float textureWidth, float textureHeight)
+void GameScreen::AddImage(GameResource type, float posX, float posY, float width, float height)
 {
-    auto texture = textureLoader.GetAsset(assetIds[type]);
-    SDL_FRect size = {texturePosX, texturePosY, textureWidth, textureHeight};
+    auto texture = surfaceLoader.GetAsset(assetIds[type]);
+    SDL_FRect size = {posX, posY, width, height};
     images[type] = std::make_unique<Sprite>(window, size, texture);
 }
 
-void GameScreen::AddSprite(GameResource type, float texturePosX, float texturePosY, float textureWidth, float textureHeight)
+void GameScreen::AddSprite(GameResource type, float posX, float posY, float width, float height)
 {
-    auto texture = textureLoader.GetAsset(assetIds[type]);
-    SDL_FRect size = {texturePosX, texturePosY, textureWidth, textureHeight};
-    sprites[type] = std::make_unique<Sprite>(window, size, texture);
+    auto surface = surfaceLoader.GetAsset(assetIds[type]);
+    SDL_FRect size = {posX, posY, width, height};
+    sprites[type] = std::make_unique<Sprite>(window, size, surface);
+}
+
+void GameScreen::AddSprite(GameResource type, float posX, float posY, float width, float height, SDL_Color color)
+{
+    SDL_FRect box = {posX, posY, width, height};
+    SDL_Color col = color;
+    sprites[type] = std::make_unique<Sprite>(window, box, col);
 }
