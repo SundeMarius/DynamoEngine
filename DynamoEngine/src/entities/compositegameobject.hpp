@@ -22,7 +22,7 @@
 #include <glm/glm.hpp>
 
 #include <memory>
-#include <vector>
+#include <map>
 
 class CompositeGameObject
 {
@@ -32,6 +32,7 @@ public:
     int AddObject(GameObject *object);
     void RemoveObject(int objectId);
     GameObject *GetObject(int objectId);
+    GameObject *ReleaseObject(int objectId);
 
     virtual void SetPosition(const glm::vec2 &position);
     virtual void AddPosition(const glm::vec2 &displacement);
@@ -50,6 +51,6 @@ protected:
     glm::vec2 pos{0.f};
     glm::vec2 vel{0.f};
 
-    std::vector<std::unique_ptr<GameObject>> objects{};
+    std::map<int, std::unique_ptr<GameObject>> objects{};
     int objectId = 0;
 };

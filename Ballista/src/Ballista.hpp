@@ -22,16 +22,15 @@
 enum class GameScene
 {
     SplashScreen,
-    GameScene,
     LoadingScene,
-    FpsFont
+    GameScene,
 };
 
-class BallistaGame : public Application
+class Game : public Application
 {
 public:
-    BallistaGame(const WindowSpecification &windowSpec,
-                 const ApplicationSpecification &applicationSpec);
+    Game(const WindowSpecification &windowSpec,
+         const ApplicationSpecification &applicationSpec);
 
     void OnEvent(SDL_Event *event) override;
 
@@ -42,4 +41,6 @@ public:
 private:
     SceneManager sceneManager;
     std::map<GameScene, int> sceneIds{};
+
+    uint32_t switchToGameSceneEventType;
 };

@@ -19,7 +19,7 @@
 void Arrow::Update(const Timestep &dt)
 {
     const float dts = dt.GetSeconds();
-    if (freeFall && vel.x != 0.f)
+    if (freeFall)
     {
         const float angle = glm::atan(vel.y / vel.x);
         SetOrientation(angle);

@@ -33,23 +33,23 @@ enum class SplashResource
 class SplashScreen : public Scene
 {
 public:
-    SplashScreen(Window &window, Log &log) : log(log), textureLoader(window), fontLoader(window) {}
+    SplashScreen(Window &window, Uint32 endSplashEventType) : window(window), textureLoader(window), fontLoader(window), eventType(endSplashEventType) {}
 
     bool Init() override;
     void Activate() override;
-    bool Completed() override;
+    void Finish() override;
     void Update(const Timestep &dt) override;
     void ProcessInput(SDL_Event *event) override { (void)event; }
     void Render() override;
 
 private:
-    Log &log;
+    Window &window;
 
     AssetLoader<Texture> textureLoader;
     AssetLoader<Font> fontLoader;
     std::map<SplashResource, int> assetIds{};
-
     std::map<SplashResource, Image> backgrounds{};
+    Uint32 eventType;
 
     float showForSeconds = 0.f;
     float currentSeconds = 0.f;

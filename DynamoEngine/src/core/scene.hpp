@@ -26,7 +26,7 @@ public:
 
     virtual bool Init() = 0;
 
-    virtual bool Completed() = 0;
+    virtual void Finish() = 0;
 
     virtual void Update(const Timestep &dt) = 0;
 

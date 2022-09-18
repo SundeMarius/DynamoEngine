@@ -28,8 +28,8 @@
 
 struct TextSpecification
 {
-    SDL_Color color;
     Font *font;
+    SDL_Color color;
     SDL_FRect box;
 };
 

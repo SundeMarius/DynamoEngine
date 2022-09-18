@@ -42,25 +42,27 @@ public:
     void Init(float groundLevel);
 
     void SetRotationSpeed(float angSpeed);
-    void SetVelocity(const glm::vec2 &velocity) override;
 
-    float GetSize() const { return size; }
-    Arrow *GetArrow() { return (Arrow *)GetObject(partIds[BallistaPart::ArrowPart]); }
+    float GetSize() const { return scale * size; }
+    float GetScale() const { return scale; }
 
-    void ShootArrow(float strength);
+    void ReloadArrow();
+    void SetLaunchOrientation(float orientation);
+    Arrow *ShootArrow(float strength);
 
-    bool ArrowIsLaunched() { return GetArrow()->IsFreeFalling(); }
+    bool ArrowIsLaunched() { return arrowLaunched; }
 
 private:
     AssetLoader<Texture> textureLoader;
     std::map<BallistaPart, int> textureIds{};
-
-    // Height of the ballista sprite in pixels
-    float size = 764;
-    float scale{0.3f};
     std::map<BallistaPart, int> partIds{};
 
-    float maxLaunchSpeed = 20.0f;
+    bool arrowLaunched = false;
+    float maxLaunchSpeed = 18.0f;
+
+    // Height of the ballista sprite in pixels
+    int size = 764;
+    float scale{0.3f};
 
     int shChassis{0};
     int shBow{0};

@@ -19,12 +19,9 @@
 bool SplashScreen::Init()
 {
     assetIds[SplashResource::SplashBackground] = textureLoader.AddAsset("assets/images/craftpix-402033-free-horizontal-2d-game-backgrounds/PNG/game_background_4/game_background_4.png");
-
-    log.Trace("Splash screen initializing...");
-    auto background = textureLoader.GetAsset(assetIds[SplashResource::SplashBackground]);
     SDL_Point point = {0, 0};
-    backgrounds.try_emplace(SplashResource::SplashBackground, background, point, background->GetWidth(), background->GetHeight());
-    log.Success("Splash screen initialized");
+    auto background = textureLoader.GetAsset(assetIds[SplashResource::SplashBackground]);
+    backgrounds.try_emplace(SplashResource::SplashBackground, background, point, window.GetWidth(), window.GetHeight());
     return true;
 }
 
@@ -33,14 +30,18 @@ void SplashScreen::Activate()
     currentSeconds = 0.0f;
 }
 
-bool SplashScreen::Completed()
+void SplashScreen::Finish()
 {
-    return currentSeconds > showForSeconds;
+    SDL_Event switchSceneEvent;
+    switchSceneEvent.type = eventType;
+    SDL_PushEvent(&switchSceneEvent);
 }
 
 void SplashScreen::Update(const Timestep &dt)
 {
     currentSeconds += dt.GetSeconds();
+    if (currentSeconds > showForSeconds)
+        Finish();
 }
 
 void SplashScreen::Render()

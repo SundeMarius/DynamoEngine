@@ -23,17 +23,15 @@ bool GameScreen::Init()
     assetIds[GameResource::Background] = textureLoader.AddAsset("assets/images/craftpix-402033-free-horizontal-2d-game-backgrounds/PNG/game_background_2/game_background_2.png");
     assetIds[GameResource::Ground] = textureLoader.AddAsset("assets/images/ground/grass_block.png");
 
-    log.Trace("Main game screen initializing...");
     int width = window.GetWidth();
     int height = window.GetHeight();
     groundLevel = height - height / 10;
+    player = std::make_unique<Ballista>(window, 0.10f);
+    player->Init(groundLevel);
+    player->SetLaunchOrientation(-math::constants::pi / 4.0f);
     AddBackground(GameResource::Background, {0, 0}, width, height);
     AddBackground(GameResource::Ground, {0, groundLevel}, width, height / 10);
-    playerScale = 0.2f;
-    player = std::make_unique<Ballista>(window, 0.2f);
-    player->Init(groundLevel);
-    gravity = {0.f, physics::constants::accelerationDueToGravity * playerScale * player->GetSize() / 2.0f};
-    log.Trace("Main game screen initialized!");
+    gravity = {0.f, physics::constants::accelerationDueToGravity * player->GetSize() / 2.0f};
     return true;
 }
 
@@ -49,11 +47,11 @@ void GameScreen::ProcessInput(SDL_Event *event)
     case SDL_KEYDOWN:
         if (event->key.keysym.sym == SDLK_RIGHT)
         {
-            player->SetVelocity({1000.f * playerScale, 0.f});
+            player->SetVelocity({1000.f * player->GetScale(), 0.f});
         }
         else if (event->key.keysym.sym == SDLK_LEFT)
         {
-            player->SetVelocity({-1000.f * playerScale, 0.f});
+            player->SetVelocity({-1000.f * player->GetScale(), 0.f});
         }
 
         if (event->key.keysym.sym == SDLK_UP)
@@ -67,7 +65,13 @@ void GameScreen::ProcessInput(SDL_Event *event)
 
         if (event->key.keysym.sym == SDLK_SPACE)
         {
-            player->ShootArrow(1.0f);
+            Arrow *currentArrow = player->ShootArrow(1.0f);
+            if (currentArrow)
+                arrow.reset(currentArrow);
+        }
+        if (event->key.keysym.sym == SDLK_ESCAPE)
+        {
+            pauseGame = !pauseGame;
         }
         break;
     case SDL_KEYUP:
@@ -81,15 +85,23 @@ void GameScreen::ProcessInput(SDL_Event *event)
 
 void GameScreen::Update(const Timestep &dt)
 {
+    if (pauseGame)
+        return;
     currentSeconds += dt.GetSeconds();
     player->Update(dt);
-    if (player->GetArrow()->TouchDown(groundLevel))
+    if (arrow)
     {
-        player->GetArrow()->SetVelocity({0.f, 0.f});
-    }
-    else if (player->ArrowIsLaunched())
-    {
-        player->GetArrow()->AddVelocity(gravity * dt.GetSeconds());
+        if (arrow->TouchDown(groundLevel))
+        {
+            arrow->SetVelocity({0.f, 0.f});
+            arrow->DeactivateFreeFall();
+            player->ReloadArrow();
+        }
+        else
+        {
+            arrow->AddVelocity(gravity * dt.GetSeconds());
+        }
+        arrow->Update(dt);
     }
 }
 
@@ -98,15 +110,16 @@ void GameScreen::Render()
     backgrounds[GameResource::Background].Render();
     backgrounds[GameResource::Ground].Render();
     player->Render();
-    // ... ///
+    if (arrow)
+        arrow->Render();
 }
 
 void GameScreen::AddText(GameResource type, SDL_Point position, int width, int height, SDL_Color color)
 {
     auto font = fontLoader.GetAsset(assetIds[type]);
     TextSpecification textSpec = {
-        color,
         font,
+        color,
         {float(position.x), float(position.y), float(width), float(height)},
     };
     texts.try_emplace(type, window, " ", textSpec);
@@ -116,10 +129,4 @@ void GameScreen::AddBackground(GameResource type, SDL_Point position, int width,
 {
     auto texture = textureLoader.GetAsset(assetIds[type]);
     backgrounds.try_emplace(type, texture, position, width, height);
-}
-
-void GameScreen::AddSprite(GameResource type, int width, int height)
-{
-    auto texture = textureLoader.GetAsset(assetIds[type]);
-    sprites.try_emplace(type, texture, width, height);
 }

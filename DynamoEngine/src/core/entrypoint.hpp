@@ -24,19 +24,18 @@ extern Application *CreateApplication(ApplicationCommandLineArguments args);
 int main(int argc, char **argv)
 {
     Application *app;
-    int runCode = 0;
+    int programReturnValue = 0;
     try
     {
         app = CreateApplication({
             .count = argc,
             .argv = argv,
         });
-        runCode = app->Start();
+        programReturnValue = app->Start();
     }
     catch (const std::exception &e)
     {
         std::cerr << e.what() << '\n';
     }
-    delete app;
-    return runCode;
+    return programReturnValue;
 }

@@ -18,6 +18,11 @@
 
 #include <glm/glm.hpp>
 
+namespace math::constants
+{
+    constexpr float pi = 3.1415926535f;
+}
+
 namespace physics::constants
 {
     constexpr float accelerationDueToGravity = 9.81f; // ms^-2

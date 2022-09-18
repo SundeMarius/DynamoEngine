@@ -23,29 +23,36 @@
 #include "DynamoEngine/src/core/entrypoint.hpp"
 #include "DynamoEngine/src/core/text.hpp"
 
-BallistaGame::BallistaGame(const WindowSpecification &windowSpec,
-                           const ApplicationSpecification &applicationSpec)
+Game::Game(const WindowSpecification &windowSpec,
+           const ApplicationSpecification &applicationSpec)
     : Application(windowSpec, applicationSpec), sceneManager{}
 {
     try
     {
+        // Register custom game events
+        switchToGameSceneEventType = SDL_RegisterEvents(1);
+
         // Add scenes
-        std::unique_ptr<Scene> splashScreen = std::make_unique<SplashScreen>(window, appLog);
-        sceneIds[GameScene::SplashScreen] = sceneManager.AddScene(splashScreen);
-        std::unique_ptr<Scene> gameScreen = std::make_unique<GameScreen>(window, appLog);
-        sceneIds[GameScene::GameScene] = sceneManager.AddScene(gameScreen);
+        appLog.Trace("Splash screen initializing...");
+        sceneIds[GameScene::SplashScreen] = sceneManager.AddScene(std::make_unique<SplashScreen>(window, switchToGameSceneEventType));
+        appLog.Success("Splash screen initialized");
+
+        appLog.Trace("Main game screen initializing...");
+        sceneIds[GameScene::GameScene] = sceneManager.AddScene(std::make_unique<GameScreen>(window));
+        appLog.Trace("Main game screen initialized!");
 
         sceneManager.SwitchScene(sceneIds[GameScene::SplashScreen]);
     }
     catch (const std::exception &e)
     {
         appLog.Warning(e.what());
-        std::cerr << e.what() << std::endl;
     }
 }
 
-void BallistaGame::OnEvent(SDL_Event *event)
+void Game::OnEvent(SDL_Event *event)
 {
+    if (event->type == switchToGameSceneEventType)
+        sceneManager.SwitchScene(sceneIds[GameScene::GameScene]);
     switch (event->type)
     {
     case SDL_QUIT:
@@ -53,18 +60,15 @@ void BallistaGame::OnEvent(SDL_Event *event)
         break;
     default:
         sceneManager.ProcessInput(event);
-        break;
     }
 }
 
-void BallistaGame::Update(const Timestep &dt)
+void Game::Update(const Timestep &dt)
 {
     sceneManager.Update(dt);
-    if (sceneManager.GetScene(sceneIds[GameScene::SplashScreen])->Completed())
-        sceneManager.SwitchScene(sceneIds[GameScene::GameScene]);
 }
 
-void BallistaGame::Render()
+void Game::Render()
 {
     sceneManager.Render();
 }
@@ -72,7 +76,7 @@ void BallistaGame::Render()
 Application *CreateApplication(ApplicationCommandLineArguments args)
 {
     WindowSpecification windowSpec = {
-        .name = "Ballista!",
+        .name = "Cross bow mayham",
         .width = 1920,
         .height = 1080,
     };
@@ -80,5 +84,5 @@ Application *CreateApplication(ApplicationCommandLineArguments args)
         .ShowFPSCounter = true,
         .args = args,
     };
-    return new BallistaGame(windowSpec, appSpec);
+    return new Game(windowSpec, appSpec);
 }

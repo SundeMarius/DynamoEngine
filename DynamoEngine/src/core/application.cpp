@@ -31,9 +31,7 @@ Application::Application(const WindowSpecification &windowSpec,
     int width = window.GetWidth();
     int height = window.GetHeight();
     fpsFont.LoadFromFile(window, "assets/fonts/open-sans/OpenSans-Semibold.ttf");
-    TextSpecification textSpec = {{200, 200, 200, 255},
-                                  &fpsFont,
-                                  {width * 0.95f, 0.f, width * 0.04f, height * 0.04f}};
+    TextSpecification textSpec = {&fpsFont, {200, 200, 200, 255}, {width * 0.95f, 0.f, width * 0.04f, height * 0.04f}};
     fpsCounter = Text(window, "FPS: ", textSpec);
     appLog.Success("Application initialized successfully");
 }

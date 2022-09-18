@@ -17,7 +17,7 @@
 #include "DynamoEngine/src/core/scenemanager.hpp"
 #include "DynamoEngine/src/core/timestep.hpp"
 
-int SceneManager::AddScene(std::unique_ptr<Scene> &scene)
+int SceneManager::AddScene(std::unique_ptr<Scene> scene)
 {
     auto inserted = scenes.emplace(sceneId, std::move(scene));
     inserted.first->second->Init();

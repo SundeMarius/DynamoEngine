@@ -30,7 +30,7 @@ public:
     SceneManager() = default;
     ~SceneManager() = default;
 
-    SceneId AddScene(std::unique_ptr<Scene> &scene);
+    SceneId AddScene(std::unique_ptr<Scene> scene);
     void RemoveScene(SceneId id);
     Scene *GetScene(SceneId id);
     void SwitchScene(SceneId id);

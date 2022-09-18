@@ -19,13 +19,13 @@
 
 int CompositeGameObject::AddObject(GameObject *object)
 {
-    objects.emplace_back(object);
+    objects.try_emplace(objectId, object);
     return objectId++;
 }
 
 void CompositeGameObject::RemoveObject(int objectId)
 {
-    objects.erase(objects.begin() + objectId);
+    objects.erase(objectId);
 }
 
 GameObject *CompositeGameObject::GetObject(int objectId)
@@ -33,9 +33,16 @@ GameObject *CompositeGameObject::GetObject(int objectId)
     return objects.at(objectId).get();
 }
 
+GameObject *CompositeGameObject::ReleaseObject(int objectId)
+{
+    GameObject *object = objects.at(objectId).release();
+    RemoveObject(objectId);
+    return object;
+}
+
 void CompositeGameObject::SetPosition(const glm::vec2 &position)
 {
-    for (auto &object : objects)
+    for (auto &[key, object] : objects)
     {
         object->AddPosition(position - pos);
     }
@@ -44,7 +51,7 @@ void CompositeGameObject::SetPosition(const glm::vec2 &position)
 void CompositeGameObject::AddPosition(const glm::vec2 &displacement)
 {
     pos += displacement;
-    for (auto &object : objects)
+    for (auto &[key, object] : objects)
     {
         object->AddPosition(displacement);
     }
@@ -52,7 +59,7 @@ void CompositeGameObject::AddPosition(const glm::vec2 &displacement)
 void CompositeGameObject::SetVelocity(const glm::vec2 &velocity)
 {
     vel = velocity;
-    for (auto &object : objects)
+    for (auto &[key, object] : objects)
     {
         object->SetVelocity(velocity);
     }
@@ -60,7 +67,7 @@ void CompositeGameObject::SetVelocity(const glm::vec2 &velocity)
 void CompositeGameObject::AddVelocity(const glm::vec2 &velocity)
 {
     vel += velocity;
-    for (auto &object : objects)
+    for (auto &[key, object] : objects)
     {
         object->AddVelocity(velocity);
     }
@@ -68,7 +75,7 @@ void CompositeGameObject::AddVelocity(const glm::vec2 &velocity)
 
 void CompositeGameObject::Rotate(float angle)
 {
-    for (auto &object : objects)
+    for (auto &[key, object] : objects)
     {
         object->Rotate(angle);
     }
@@ -76,15 +83,16 @@ void CompositeGameObject::Rotate(float angle)
 
 void CompositeGameObject::Update(const Timestep &dt)
 {
-    for (auto &object : objects)
+    for (auto &[key, object] : objects)
     {
         object->Update(dt);
     }
+    pos += vel * dt.GetSeconds();
 }
 
 void CompositeGameObject::Render()
 {
-    for (auto &object : objects)
+    for (auto &[key, object] : objects)
     {
         const auto &sprite = object->GetSprite();
         const auto &position = object->GetPosition();
