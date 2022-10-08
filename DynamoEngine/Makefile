@@ -1,4 +1,4 @@
-CXX := clang++
+CXX := g++
 CXXFLAGS := -std=c++20 -I.. -ggdb
 WARNING := -Wall -Wextra -pedantic
 

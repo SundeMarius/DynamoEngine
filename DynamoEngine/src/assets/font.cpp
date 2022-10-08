@@ -25,4 +25,14 @@ void Font::LoadFromFile(Window &window, const std::string &filePath)
 {
     (void)window;
     font = TTF_OpenFont(filePath.c_str(), size);
+    if (!font)
+    {
+        throw AssetInitializationError(SDL_GetError());
+    }
+}
+
+void Font::Resize(int newSize)
+{
+    size = newSize;
+    TTF_SetFontSize(font, size);
 }

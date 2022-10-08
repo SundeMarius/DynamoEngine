@@ -1,0 +1,29 @@
+{
+    "Game": {
+        "author": "Marius Sunde Sivertsen",
+        "name": "Cross bow mayham",
+        "description": "An example on how to use my game engine",
+        "version": "1.0.0"
+    },
+    "Window": {
+        "width": 2560,
+        "height": 1440
+    },
+    "Assets": {
+        "Player": {
+            "chassisTexturePath": "assets/sprites/ballista/pieces/chassis.png",
+            "backwheelTexturePath": "assets/sprites/ballista/pieces/backwheel.png",
+            "frontwheelTexturePath": "assets/sprites/ballista/pieces/front-wheel.png",
+            "bowTexturePath": "assets/sprites/ballista/pieces/bow.png",
+            "arrowTexturePath": "assets/sprites/ballista/pieces/spear.png"
+        },
+        "GameScene": {
+            "backgroundPath": "assets/images/craftpix-402033-free-horizontal-2d-game-backgrounds/PNG/game_background_4/game_background_4.png",
+            "grassPath": "assets/images/ground/grass_block.png"
+        }
+    },
+    "Debug": {
+        "appLogFileName": "./app.log",
+        "fontPath": "assets/fonts/open-sans/OpenSans-Semibold.ttf"
+    }
+}

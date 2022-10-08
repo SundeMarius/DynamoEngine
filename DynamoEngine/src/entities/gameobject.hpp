@@ -37,19 +37,18 @@ public:
     virtual void SetVelocity(const glm::vec2 &velocity) { vel = velocity; }
     virtual void AddVelocity(const glm::vec2 &velocity) { vel += velocity; }
 
+    float GetRotationSpeed() const { return angSpeed; }
     float GetOrientation() const { return sprite.GetOrientation(); }
     const glm::vec2 GetPosition() const { return pos; }
     const glm::vec2 GetVelocity() const { return vel; }
-    float GetRotationSpeed() const { return angSpeed; }
 
     Sprite *GetSprite() { return &sprite; }
 
     void Render();
-
     virtual void Update(const Timestep &dt) = 0;
 
 protected:
-    Sprite sprite;
+    Sprite sprite{};
     glm::vec2 pos{0.f};
     glm::vec2 vel{0.f};
     float angSpeed{0.f};

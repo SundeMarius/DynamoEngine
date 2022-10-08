@@ -45,13 +45,13 @@ public:
     int GetHeight() const { return spec.height; }
     int GetFPS() const { return frametime.GetFPS(); }
 
-    SDL_FPoint GetCenter() const { return {float(spec.width) / 2.0f, float(spec.height) / 2.0f}; }
+    SDL_Point GetCenter() const { return {spec.width / 2, spec.height / 2}; }
 
     SDL_Renderer *GetSDLRenderer() { return renderer; }
 
 private:
-    WindowSpecification spec;
+    WindowSpecification spec{};
     SDL_Renderer *renderer = nullptr;
     SDL_Window *window = nullptr;
-    Timestep frametime;
+    Timestep frametime{};
 };

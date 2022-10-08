@@ -27,9 +27,6 @@ class SceneManager
     using SceneId = int;
 
 public:
-    SceneManager() = default;
-    ~SceneManager() = default;
-
     SceneId AddScene(std::unique_ptr<Scene> scene);
     void RemoveScene(SceneId id);
     Scene *GetScene(SceneId id);
@@ -41,7 +38,7 @@ public:
     void Render();
 
 private:
-    std::unordered_map<SceneId, std::unique_ptr<Scene>> scenes;
+    std::unordered_map<SceneId, std::unique_ptr<Scene>> scenes{};
     Scene *currentScene = nullptr;
     SceneId sceneId = 0;
 };

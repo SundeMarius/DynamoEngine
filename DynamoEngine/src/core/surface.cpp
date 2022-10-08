@@ -20,14 +20,17 @@
 
 Surface::Surface(SDL_Surface *surface) : mSurface(surface)
 {
-    width = surface->w;
-    height = surface->h;
+    if (surface)
+    {
+        width = surface->w;
+        height = surface->h;
+    }
 }
 
-Surface::Surface(const SDL_FRect &frame, const SDL_Color &color) : width(frame.w), height(frame.h)
+Surface::Surface(const SDL_Rect &frame, const SDL_Color &color) : width(frame.w), height(frame.h)
 {
     mSurface = SDL_CreateRGBSurface(0, frame.w, frame.h, 32, 0, 0, 0, 0);
-    if (SDL_FillRect(mSurface, NULL, SDL_MapRGBA(mSurface->format, color.r, color.g, color.b, color.a) < 0))
+    if (SDL_FillRect(mSurface, NULL, SDL_MapRGBA(mSurface->format, color.r, color.g, color.b, color.a)) < 0)
     {
         throw std::runtime_error("Failed to create surface with given frame and color");
     }

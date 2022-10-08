@@ -20,7 +20,6 @@
 #include "DynamoEngine/src/assets/assetloader.hpp"
 
 #include "Ballista/src/entities/arrow.hpp"
-#include "Ballista/src/utilities/physics.hpp"
 
 #include <map>
 
@@ -33,10 +32,19 @@ enum BallistaPart
     ArrowPart,
 };
 
+struct BallistaAssetConfig
+{
+    std::string chassisTexturePath;
+    std::string backwheelTexturePath;
+    std::string frontwheelTexturePath;
+    std::string bowTexturePath;
+    std::string arrowTexturePath;
+};
+
 class Ballista : public CompositeGameObject
 {
 public:
-    Ballista(Window &window, float spriteScale = 0.3f);
+    Ballista(const BallistaAssetConfig &config, AssetLoader<Texture> &textureLoader, float spriteScale = 0.3f);
     ~Ballista() = default;
 
     void Init(float groundLevel);
@@ -53,20 +61,21 @@ public:
     bool ArrowIsLaunched() { return arrowLaunched; }
 
 private:
-    AssetLoader<Texture> textureLoader;
+    BallistaAssetConfig config{};
+
+    AssetLoader<Texture> &textureLoader;
     std::map<BallistaPart, int> textureIds{};
-    std::map<BallistaPart, int> partIds{};
 
     bool arrowLaunched = false;
     float maxLaunchSpeed = 18.0f;
 
     // Height of the ballista sprite in pixels
+    std::map<BallistaPart, int> partIds{};
+    float scale{};
     int size = 764;
-    float scale{0.3f};
-
-    int shChassis{0};
-    int shBow{0};
-    int swBow{0};
-    int swArrow{0};
-    int shArrow{0};
+    int shChassis{};
+    int shBow{};
+    int swBow{};
+    int swArrow{};
+    int shArrow{};
 };

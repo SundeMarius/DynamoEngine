@@ -25,8 +25,11 @@
 #include "DynamoEngine/src/entities/sprite.hpp"
 
 #include "Ballista/src/entities/ballista.hpp"
+#include "Ballista/src/utilities/eventtrigger.hpp"
+#include "Ballista/src/utilities/physics.hpp"
 
 #include <map>
+#include <vector>
 
 enum class GameResource
 {
@@ -34,10 +37,19 @@ enum class GameResource
     Ground,
 };
 
+struct GameSceneAssetConfig
+{
+    std::string backgroundPath;
+    std::string grassPath;
+    BallistaAssetConfig playerConfig;
+};
+
 class GameScreen : public Scene
 {
 public:
-    GameScreen(Window &window) : window(window), textureLoader(window), fontLoader(window) {}
+    GameScreen(const GameSceneAssetConfig &config, Window &window, EventTrigger &eventTrigger)
+        : config(config), window(window), eventTrigger(eventTrigger),
+          textureLoader(window), fontLoader(window) {}
 
     bool Init() override;
     void Activate() override;
@@ -51,14 +63,18 @@ private:
     void AddBackground(GameResource type, SDL_Point position, int width, int height);
 
 private:
-    std::unique_ptr<Ballista> player;
-    std::unique_ptr<Arrow> arrow;
+    std::unique_ptr<Ballista> player{};
+    std::vector<std::unique_ptr<Arrow>> arrows{1};
+    glm::vec2 gravity{0.f, physics::constants::accelerationDueToGravity};
+    int groundLevel{0};
 
-    int groundLevel{};
-    glm::vec2 gravity{};
+    bool ArrowHasLanded(Arrow *arrow) const;
+    void ApplyGravity(Arrow *arrow, const Timestep &dt) const;
 
 private:
+    GameSceneAssetConfig config{};
     Window &window;
+    EventTrigger &eventTrigger;
 
     AssetLoader<Texture> textureLoader;
     AssetLoader<Font> fontLoader;
@@ -68,5 +84,4 @@ private:
     std::map<GameResource, Text> texts{};
 
     float currentSeconds = 0.f;
-    bool pauseGame = false;
 };

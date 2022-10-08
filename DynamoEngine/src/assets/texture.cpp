@@ -20,30 +20,42 @@
 
 #include <stdexcept>
 
+Texture::Texture(Window &window, SDL_Texture *texture) : window(&window)
+{
+    int *w = nullptr;
+    int *h = nullptr;
+    if (!texture)
+        throw AssetInitializationError("SDL_Texture is NULL");
+    mTexture = texture;
+    SDL_QueryTexture(texture, NULL, NULL, w, h);
+    width = *w;
+    height = *h;
+}
+
 Texture::Texture(Window &window, Surface *surface) : window(&window), width(surface->GetWidth()), height(surface->GetHeight())
 {
     mTexture = SDL_CreateTextureFromSurface(window.GetSDLRenderer(), surface->GetSDLSurface());
     if (!mTexture)
     {
-        throw std::runtime_error(SDL_GetError());
+        throw AssetInitializationError(SDL_GetError());
     }
 }
 
 void Texture::LoadFromFile(Window &window, const std::string &filePath)
 {
     this->window = &window;
-    SDL_Surface *surface = IMG_Load(filePath.c_str());
-    if (!surface)
+    Surface surface = IMG_Load(filePath.c_str());
+    if (!surface.GetSDLSurface())
     {
-        throw std::runtime_error(SDL_GetError());
+        throw AssetInitializationError(SDL_GetError());
     }
-    mTexture = SDL_CreateTextureFromSurface(window.GetSDLRenderer(), surface);
+    mTexture = SDL_CreateTextureFromSurface(window.GetSDLRenderer(), surface.GetSDLSurface());
     if (!mTexture)
     {
-        throw std::runtime_error(SDL_GetError());
+        throw AssetInitializationError(SDL_GetError());
     }
-    width = surface->w;
-    height = surface->h;
+    width = surface.GetWidth();
+    height = surface.GetHeight();
 }
 
 Texture::~Texture()

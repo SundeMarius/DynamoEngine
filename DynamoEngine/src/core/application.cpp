@@ -21,42 +21,41 @@
 
 #include <iostream>
 
-Application::Application(const WindowSpecification &windowSpec,
-                         const ApplicationSpecification &applicationSpec)
-    : window(windowSpec), appSpec(applicationSpec), winSpec(windowSpec), appLog(appSpec.logFile)
+Application::Application(const ApplicationSpecification &applicationSpec)
+    : window(applicationSpec.windowSpecification), appSpec(applicationSpec), appLog(applicationSpec.config.at("Debug").at("appLogFileName"))
 {
-    appLog.Trace("Initializing application: " + winSpec.name);
+    appLog.Trace("Initializing application: " + applicationSpec.windowSpecification.name);
     if (!Init())
-        throw std::runtime_error("Fatal error occured -- see " + appSpec.logFile);
-    int width = window.GetWidth();
-    int height = window.GetHeight();
-    fpsFont.LoadFromFile(window, "assets/fonts/open-sans/OpenSans-Semibold.ttf");
-    TextSpecification textSpec = {&fpsFont, {200, 200, 200, 255}, {width * 0.95f, 0.f, width * 0.04f, height * 0.04f}};
-    fpsCounter = Text(window, "FPS: ", textSpec);
+        throw std::runtime_error("Fatal error occured while initializing the application components. See the log for details");
     appLog.Success("Application initialized successfully");
 }
 
 Application::~Application()
 {
-    appLog.Trace("Application shut down");
+    appLog.Success("Application shut down successfully");
 }
 
 bool Application::Init()
 {
+    appLog.Trace("Initializing window of size " + std::to_string(window.GetWidth()) + "x" + std::to_string(window.GetHeight()));
     window.Init();
+    appLog.Trace("Window initialized");
     // Initialize texture settings
-    if (IMG_Init(IMG_INIT_PNG | IMG_INIT_JPG) == 0)
+    appLog.Trace("Initializing video components:");
+    appLog.Trace("\tInitializing SDL_Image");
+    if (IMG_Init(IMG_INIT_PNG) == 0)
     {
         appLog.Fatal(IMG_GetError());
         return false;
     }
     // Initialize font settings
+    appLog.Trace("\tInitializing SDL_TTF");
     if (TTF_Init() < 0)
     {
         appLog.Fatal(TTF_GetError());
         return false;
     }
-
+    appLog.Success("All video components initialized");
     return true;
 }
 
@@ -75,29 +74,20 @@ int Application::Start()
             SDL_RenderClear(window.GetSDLRenderer());
             Update(window.GetFrameTime());
             Render();
-            if (appSpec.ShowFPSCounter)
-            {
-                RenderFpsCounter();
-            }
             SDL_RenderPresent(window.GetSDLRenderer());
-            // Keep last frame time in window object
             window.SetFrameTime(SDL_GetTicks64() - startTimeMilliSec);
         }
         catch (const std::exception &e)
         {
             appLog.Error(e.what());
+            std::cerr << "An error occured while the game was running. See the log.\n";
+            return EXIT_FAILURE;
         }
     }
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 void Application::Close()
 {
     running = false;
-}
-
-void Application::RenderFpsCounter()
-{
-    fpsCounter.SetText("FPS: " + std::to_string(window.GetFPS()));
-    fpsCounter.Render();
 }

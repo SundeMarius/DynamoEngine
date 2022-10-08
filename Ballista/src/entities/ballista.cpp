@@ -22,14 +22,14 @@
 
 #include <iostream>
 
-Ballista::Ballista(Window &window, float spriteScale)
-    : textureLoader(window), scale(spriteScale)
+Ballista::Ballista(const BallistaAssetConfig &config, AssetLoader<Texture> &textureLoader, float spriteScale)
+    : config(config), textureLoader(textureLoader), scale(spriteScale)
 {
-    textureIds[BallistaPart::Chassis] = textureLoader.AddAsset("assets/sprites/ballista/pieces/chassis.png");
-    textureIds[BallistaPart::BackWheel] = textureLoader.AddAsset("assets/sprites/ballista/pieces/backwheel.png");
-    textureIds[BallistaPart::FrontWheel] = textureLoader.AddAsset("assets/sprites/ballista/pieces/front-wheel.png");
-    textureIds[BallistaPart::Bow] = textureLoader.AddAsset("assets/sprites/ballista/pieces/bow.png");
-    textureIds[BallistaPart::ArrowPart] = textureLoader.AddAsset("assets/sprites/ballista/pieces/spear.png");
+    textureIds[BallistaPart::Chassis] = textureLoader.AddAsset(config.chassisTexturePath);
+    textureIds[BallistaPart::BackWheel] = textureLoader.AddAsset(config.backwheelTexturePath);
+    textureIds[BallistaPart::FrontWheel] = textureLoader.AddAsset(config.frontwheelTexturePath);
+    textureIds[BallistaPart::Bow] = textureLoader.AddAsset(config.bowTexturePath);
+    textureIds[BallistaPart::ArrowPart] = textureLoader.AddAsset(config.arrowTexturePath);
 
     int swChassis = textureLoader.GetAsset(textureIds[BallistaPart::Chassis])->GetWidth() * scale;
     shChassis = textureLoader.GetAsset(textureIds[BallistaPart::Chassis])->GetHeight() * scale;
@@ -77,9 +77,12 @@ void Ballista::ReloadArrow()
         return;
     }
     glm::vec2 arrowPosition = {shChassis * 0.1f + (swBow - swArrow) / 2.0f, shArrow * 2.f + shBow};
-    float orientation = GetObject(partIds[BallistaPart::Bow])->GetOrientation();
+    const float orientation = GetObject(partIds[BallistaPart::Bow])->GetOrientation();
     const Sprite arrowSprite(textureLoader.GetAsset(textureIds[BallistaPart::ArrowPart]), swArrow, shArrow, orientation);
     partIds[BallistaPart::ArrowPart] = AddObject(new Arrow(arrowSprite, GetPosition() + arrowPosition));
+    const float rotSpeed = GetObject(partIds[BallistaPart::Bow])->GetRotationSpeed();
+    GetObject(partIds[BallistaPart::ArrowPart])->SetVelocity(GetVelocity());
+    GetObject(partIds[BallistaPart::ArrowPart])->SetRotationSpeed(rotSpeed);
     arrowLaunched = false;
 }
 
@@ -107,7 +110,7 @@ Arrow *Ballista::ShootArrow(float strength)
         return nullptr;
     arrowLaunched = true;
     Arrow *arrow = static_cast<Arrow *>(ReleaseObject(partIds[BallistaPart::ArrowPart]));
-    arrow->SetVelocity(speedToVelocity(maxLaunchSpeed * strength, arrow->GetOrientation()));
     arrow->ActivateFreeFall();
+    arrow->AddVelocity(speedToVelocity(maxLaunchSpeed * strength, arrow->GetOrientation()));
     return arrow;
 }

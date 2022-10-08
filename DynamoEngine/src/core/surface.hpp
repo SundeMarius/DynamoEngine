@@ -25,7 +25,7 @@ class Surface
 public:
     Surface() = default;
     Surface(SDL_Surface *surface);
-    Surface(const SDL_FRect &frame, const SDL_Color &color);
+    Surface(const SDL_Rect &frame, const SDL_Color &color);
     ~Surface();
 
     SDL_Surface *GetSDLSurface() const { return mSurface; }
@@ -34,7 +34,7 @@ public:
     int GetHeight() const { return height; }
 
 private:
-    SDL_Surface *mSurface;
+    SDL_Surface *mSurface = nullptr;
     int width = 0;
     int height = 0;
 };

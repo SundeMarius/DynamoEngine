@@ -19,11 +19,13 @@
 #include "DynamoEngine/src/core/window.hpp"
 #include "DynamoEngine/src/assets/texture.hpp"
 
+#include <memory>
+
 class Image
 {
 public:
     Image() = default;
-    Image(Texture *texture, SDL_Point position, int width, int height) : mTexture(texture), box{position.x, position.y, width, height} {}
+    Image(std::shared_ptr<Texture> texture, SDL_Point position, int width, int height) : mTexture(texture), box{position.x, position.y, width, height} {}
 
     int GetWidth() const { return box.w; }
     int GetHeight() const { return box.h; }
@@ -31,6 +33,6 @@ public:
     void Render();
 
 private:
-    Texture *mTexture = nullptr;
+    std::shared_ptr<Texture> mTexture{};
     SDL_Rect box{};
 };

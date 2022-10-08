@@ -18,11 +18,11 @@
 
 #include <stdexcept>
 
-Sprite::Sprite(Texture *texture, int width, int height, float orientation) : w(width), h(height), angle(orientation)
+Sprite::Sprite(std::shared_ptr<Texture> texture, int width, int height, float orientation) : w(width), h(height), angle(orientation)
 {
     if (!texture)
     {
         throw std::runtime_error("Cannot create sprite from emtpy texture");
     }
-    mTexture = texture;
+    mTexture = std::move(texture);
 }

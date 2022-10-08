@@ -16,27 +16,15 @@
 // along with DynamoEngine Engine.  If not, see <http://www.gnu.org/licenses/>.
 #include "DynamoEngine/src/core/text.hpp"
 
-Text::Text(Window &window, const std::string &text, TextSpecification specification) : text(text), spec(specification), textRenderer(window.GetSDLRenderer())
+Text::Text(Window &window, const std::string &text, TextSpecification specification) : text(text), spec(specification)
 {
-    SDL_Surface *textSurface = TTF_RenderText_Solid(spec.font->GetTTFFont(), text.c_str(), spec.color);
-    textTexture = SDL_CreateTextureFromSurface(textRenderer, textSurface);
-    SDL_FreeSurface(textSurface);
-}
-
-Text::~Text()
-{
-    SDL_DestroyTexture(textTexture);
-}
-
-void Text::SetText(const std::string &newText)
-{
-    text = newText;
-    SDL_Surface *textSurface = TTF_RenderText_Solid(spec.font->GetTTFFont(), text.c_str(), spec.color);
-    textTexture = SDL_CreateTextureFromSurface(textRenderer, textSurface);
-    SDL_FreeSurface(textSurface);
+    Surface textSurface = TTF_RenderText_Solid(spec.font->GetTTFFont(), text.c_str(), spec.color);
+    mTexture = std::make_unique<Texture>(window, &textSurface);
 }
 
 void Text::Render()
 {
-    SDL_RenderCopyF(textRenderer, textTexture, NULL, &spec.box);
+    int i = SDL_RenderCopy(mTexture->GetSDLRenderer(), mTexture->GetSDLTexture(), NULL, &spec.box);
+    if (i != 0)
+        throw std::runtime_error(SDL_GetError());
 }

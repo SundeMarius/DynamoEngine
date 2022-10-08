@@ -19,6 +19,7 @@
 #include "DynamoEngine/src/core/window.hpp"
 
 #include <string>
+#include <stdexcept>
 
 class Asset
 {
@@ -29,18 +30,8 @@ public:
     virtual void LoadFromFile(Window &window, const std::string &filePath) = 0;
 };
 
-class AssetInitializationError : public std::exception
+class AssetInitializationError : public std::runtime_error
 {
 public:
-    AssetInitializationError(const std::string &errorMessage)
-    {
-        msg = errorMessage;
-    }
-    const char *what() const throw()
-    {
-        return msg.c_str();
-    }
-
-private:
-    std::string msg;
+    AssetInitializationError(const std::string &errorMessage) : std::runtime_error(errorMessage) {}
 };

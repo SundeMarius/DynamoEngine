@@ -19,6 +19,7 @@
 void BallistaWheel::Update(const Timestep &dt)
 {
     const float dts = dt.GetSeconds();
-    Rotate(vel.x * dts / radius);
+    SetRotationSpeed(vel.x / radius);
     AddPosition(vel * dts);
+    Rotate(GetRotationSpeed() * dts);
 }

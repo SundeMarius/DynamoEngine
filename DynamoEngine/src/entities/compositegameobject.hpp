@@ -24,7 +24,7 @@
 #include <memory>
 #include <map>
 
-class CompositeGameObject
+class CompositeGameObject : public GameObject
 {
 public:
     virtual ~CompositeGameObject() = default;
@@ -34,23 +34,17 @@ public:
     GameObject *GetObject(int objectId);
     GameObject *ReleaseObject(int objectId);
 
-    virtual void SetPosition(const glm::vec2 &position);
-    virtual void AddPosition(const glm::vec2 &displacement);
-    virtual void SetVelocity(const glm::vec2 &velocity);
-    virtual void AddVelocity(const glm::vec2 &velocity);
-    virtual void Rotate(float angle);
-
-    const glm::vec2 GetPosition() const { return pos; }
-    const glm::vec2 GetVelocity() const { return vel; }
+    void SetPosition(const glm::vec2 &position) override;
+    void AddPosition(const glm::vec2 &displacement) override;
+    void SetVelocity(const glm::vec2 &velocity) override;
+    void AddVelocity(const glm::vec2 &velocity) override;
+    void Rotate(float angle) override;
 
     void Render();
 
-    virtual void Update(const Timestep &dt);
+    void Update(const Timestep &dt) override;
 
 protected:
-    glm::vec2 pos{0.f};
-    glm::vec2 vel{0.f};
-
     std::map<int, std::unique_ptr<GameObject>> objects{};
     int objectId = 0;
 };

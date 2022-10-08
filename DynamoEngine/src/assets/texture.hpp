@@ -25,6 +25,7 @@ class Texture : public Asset
 {
 public:
     Texture() = default;
+    Texture(Window &window, SDL_Texture *texture);
     Texture(Window &window, Surface *surface);
     ~Texture();
 
@@ -37,8 +38,8 @@ public:
     SDL_Renderer *GetSDLRenderer() const { return window->GetSDLRenderer(); }
 
 private:
-    Window *window;
-    SDL_Texture *mTexture;
-    int width;
-    int height;
+    Window *window = nullptr;
+    SDL_Texture *mTexture = nullptr;
+    int width{};
+    int height{};
 };

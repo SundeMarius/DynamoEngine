@@ -25,26 +25,35 @@
 #include <vector>
 #include <memory>
 
+#define JSON_DIAGNOSTICS 1
+#include "DynamoEngine/vendor/json.hpp"
+
+using json = nlohmann::json;
+
 struct ApplicationCommandLineArguments
 {
-    int count = 0;
+    int argc;
     char **argv = nullptr;
 };
 // dd
 struct ApplicationSpecification
 {
-    std::string logFile = "./app.log";
-    bool ShowFPSCounter = true;
-    ApplicationCommandLineArguments args{};
+    json config;
+    WindowSpecification windowSpecification;
+    ApplicationCommandLineArguments args;
 };
 
 class Application
 {
 public:
-    Application(const WindowSpecification &windowSpec, const ApplicationSpecification &applicationSpec);
+    Application(const ApplicationSpecification &applicationSpec);
     virtual ~Application();
 
     int Start();
+
+    void TurnFPSCounterOff() { showDebugInfo = false; }
+
+    void TurnFPSCounterOn() { showDebugInfo = true; }
 
 protected:
     bool Init();
@@ -57,19 +66,12 @@ protected:
 
     virtual void Update(const Timestep &dt) = 0;
 
-    void ToggleFPSCounter() { appSpec.ShowFPSCounter = !appSpec.ShowFPSCounter; }
-
 protected:
     Window window;
     ApplicationSpecification appSpec;
-    WindowSpecification winSpec;
     Log appLog;
+    bool showDebugInfo = false;
 
 private:
-    Font fpsFont;
-    Text fpsCounter;
-
-    void RenderFpsCounter();
-
     bool running = true;
 };

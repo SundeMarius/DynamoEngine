@@ -22,7 +22,7 @@
 class Log
 {
 public:
-    Log(const std::string &filePath, bool coloredOutput = true) : file(filePath), color(coloredOutput) {}
+    Log(const std::string &filePath, bool coloredOutput = true) : file(filePath), useColor(coloredOutput) {}
 
     void Debug(const std::string &message);
     void Trace(const std::string &message);
@@ -33,8 +33,9 @@ public:
 
 private:
     std::ofstream file;
-    bool color;
+    bool useColor;
 
 private:
     static std::string MessageWithTimeStamp(const std::string &message);
+    void WriteToFile(const std::string &message, const std::string &color);
 };

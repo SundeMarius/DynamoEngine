@@ -17,25 +17,13 @@
 
 #include "DynamoEngine/src/core/application.hpp"
 
-#include <iostream>
-
 extern Application *CreateApplication(ApplicationCommandLineArguments args);
 
 int main(int argc, char **argv)
 {
-    Application *app;
-    int programReturnValue = 0;
-    try
-    {
-        app = CreateApplication({
-            .count = argc,
-            .argv = argv,
-        });
+    int programReturnValue = EXIT_FAILURE;
+    auto app = std::unique_ptr<Application>(CreateApplication({.argc = argc, .argv = argv}));
+    if (app)
         programReturnValue = app->Start();
-    }
-    catch (const std::exception &e)
-    {
-        std::cerr << e.what() << '\n';
-    }
     return programReturnValue;
 }

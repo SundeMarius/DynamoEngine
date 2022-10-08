@@ -21,11 +21,13 @@
 #include <SDL2/SDL.h>
 #include <glm/glm.hpp>
 
+#include <memory>
+
 class Sprite
 {
 public:
     Sprite() = default;
-    Sprite(Texture *texture, int width, int height, float orientation = 0.0f);
+    Sprite(std::shared_ptr<Texture> texture, int width, int height, float orientation = 0.0f);
 
     void SetWidth(int width) { w = width; }
     void SetHeight(int height) { h = height; }
@@ -36,11 +38,11 @@ public:
     void Rotate(float orientation) { angle += orientation; }
 
     float GetOrientation() const { return angle; }
-    Texture *GetTexture() const { return mTexture; }
+    Texture *GetTexture() const { return mTexture.get(); }
 
 private:
-    Texture *mTexture;
-    int w;
-    int h;
-    float angle;
+    std::shared_ptr<Texture> mTexture{};
+    int w{};
+    int h{};
+    float angle{};
 };

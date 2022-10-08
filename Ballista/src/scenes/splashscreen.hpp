@@ -23,6 +23,8 @@
 #include "DynamoEngine/src/core/text.hpp"
 #include "DynamoEngine/src/assets/texture.hpp"
 
+#include "Ballista/src/utilities/eventtrigger.hpp"
+
 #include <map>
 
 enum class SplashResource
@@ -33,7 +35,7 @@ enum class SplashResource
 class SplashScreen : public Scene
 {
 public:
-    SplashScreen(Window &window, Uint32 endSplashEventType) : window(window), textureLoader(window), fontLoader(window), eventType(endSplashEventType) {}
+    SplashScreen(Window &window, EventTrigger &eventTrigger) : window(window), eventTrigger(eventTrigger), fontLoader(window) {}
 
     bool Init() override;
     void Activate() override;
@@ -44,13 +46,9 @@ public:
 
 private:
     Window &window;
-
-    AssetLoader<Texture> textureLoader;
+    EventTrigger &eventTrigger;
     AssetLoader<Font> fontLoader;
-    std::map<SplashResource, int> assetIds{};
-    std::map<SplashResource, Image> backgrounds{};
-    Uint32 eventType;
 
-    float showForSeconds = 0.f;
+    float showForSeconds = 1.f;
     float currentSeconds = 0.f;
 };

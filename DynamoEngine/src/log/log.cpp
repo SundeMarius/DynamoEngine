@@ -22,33 +22,27 @@
 
 void Log::Debug(const std::string &message)
 {
-    std::string msg = MessageWithTimeStamp(message);
-    file << (color ? MAGENTA + msg + RESET : msg) << std::endl;
+    WriteToFile(message, MAGENTA);
 }
 void Log::Trace(const std::string &message)
 {
-    std::string msg = MessageWithTimeStamp(message);
-    file << msg << std::endl;
+    WriteToFile(message, RESET);
 }
 void Log::Success(const std::string &message)
 {
-    std::string msg = MessageWithTimeStamp(message);
-    file << (color ? GREEN + msg + RESET : msg) << std::endl;
+    WriteToFile(message, GREEN);
 }
 void Log::Warning(const std::string &message)
 {
-    std::string msg = MessageWithTimeStamp(message);
-    file << (color ? YELLOW + msg + RESET : msg) << std::endl;
+    WriteToFile(message, YELLOW);
 }
 void Log::Error(const std::string &message)
 {
-    std::string msg = MessageWithTimeStamp(message);
-    file << (color ? RED + msg + RESET : msg) << std::endl;
+    WriteToFile(message, RED);
 }
 void Log::Fatal(const std::string &message)
 {
-    std::string msg = MessageWithTimeStamp(message);
-    file << (color ? BOLDRED + msg + RESET : msg) << std::endl;
+    WriteToFile(message, BOLDRED);
 }
 
 std::string Log::MessageWithTimeStamp(const std::string &message)
@@ -57,4 +51,10 @@ std::string Log::MessageWithTimeStamp(const std::string &message)
     std::string time = std::ctime(&now);
     time.pop_back();
     return time + ": " + message;
+}
+
+void Log::WriteToFile(const std::string &message, const std::string &color)
+{
+    const std::string &msg = MessageWithTimeStamp(message);
+    file << (useColor ? color + msg + RESET : msg) << std::endl;
 }

@@ -37,12 +37,9 @@ public:
         if (assetIterator != assets.end())
             return assetIterator->second.id;
 
-        auto as = std::make_unique<T>();
+        auto as = std::make_shared<T>();
         as->LoadFromFile(window, filePath);
-        assets[filePath] = {
-            .id = currentId,
-            .asset = std::move(as),
-        };
+        assets[filePath] = {.id = currentId, .asset = std::move(as)};
         return currentId++;
     }
     void RemoveAsset(AssetId id)
@@ -56,13 +53,13 @@ public:
             }
         }
     }
-    T *GetAsset(AssetId id)
+    std::shared_ptr<T> GetAsset(AssetId id)
     {
-        for (const auto &[filePath, assetElement] : assets)
+        for (auto &[filePath, assetElement] : assets)
         {
             if (assetElement.id == id)
             {
-                return assetElement.asset.get();
+                return assetElement.asset;
             }
         }
         return nullptr;
@@ -74,7 +71,7 @@ private:
     struct AssetElement
     {
         int id = 0;
-        std::unique_ptr<T> asset{};
+        std::shared_ptr<T> asset{};
     };
     std::unordered_map<std::string, AssetElement> assets{};
     AssetId currentId = 0;

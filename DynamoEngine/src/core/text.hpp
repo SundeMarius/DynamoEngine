@@ -30,7 +30,7 @@ struct TextSpecification
 {
     Font *font;
     SDL_Color color;
-    SDL_FRect box;
+    SDL_Rect box;
 };
 
 class Text
@@ -38,16 +38,11 @@ class Text
 public:
     Text() = default;
     Text(Window &window, const std::string &text, TextSpecification specification);
-    ~Text();
-
-    void SetText(const std::string &newText);
 
     void Render();
 
 private:
-    std::string text;
-    TextSpecification spec;
-
-    SDL_Texture *textTexture = nullptr;
-    SDL_Renderer *textRenderer = nullptr;
+    std::string text{};
+    TextSpecification spec{};
+    std::unique_ptr<Texture> mTexture{};
 };

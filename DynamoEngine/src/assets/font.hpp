@@ -31,6 +31,8 @@ public:
 
     void LoadFromFile(Window &window, const std::string &filePath) override;
 
+    void Resize(int newSize);
+
     TTF_Font *GetTTFFont() const { return font; }
 
 private:

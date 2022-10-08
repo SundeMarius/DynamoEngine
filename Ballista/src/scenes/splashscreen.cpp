@@ -14,14 +14,14 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Ballista.  If not, see <http://www.gnu.org/licenses/>.
-#include "splashscreen.hpp"
+#include "Ballista/src/scenes/splashscreen.hpp"
+
+#include "Ballista/src/utilities/events.hpp"
 
 bool SplashScreen::Init()
 {
-    assetIds[SplashResource::SplashBackground] = textureLoader.AddAsset("assets/images/craftpix-402033-free-horizontal-2d-game-backgrounds/PNG/game_background_4/game_background_4.png");
-    SDL_Point point = {0, 0};
-    auto background = textureLoader.GetAsset(assetIds[SplashResource::SplashBackground]);
-    backgrounds.try_emplace(SplashResource::SplashBackground, background, point, window.GetWidth(), window.GetHeight());
+    SDL_Color backgroundColor = {75, 75, 75, 255};
+    window.SetBagroundColor(backgroundColor);
     return true;
 }
 
@@ -32,9 +32,7 @@ void SplashScreen::Activate()
 
 void SplashScreen::Finish()
 {
-    SDL_Event switchSceneEvent;
-    switchSceneEvent.type = eventType;
-    SDL_PushEvent(&switchSceneEvent);
+    eventTrigger.TriggerEvent(GameEvent::switchToGameScene);
 }
 
 void SplashScreen::Update(const Timestep &dt)
@@ -46,5 +44,4 @@ void SplashScreen::Update(const Timestep &dt)
 
 void SplashScreen::Render()
 {
-    backgrounds[SplashResource::SplashBackground].Render();
 }

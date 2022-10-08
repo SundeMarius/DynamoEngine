@@ -23,10 +23,11 @@
 
 Window::~Window()
 {
-    SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
+    SDL_DestroyRenderer(renderer);
     TTF_Quit();
     IMG_Quit();
+    SDL_TLSCleanup();
     SDL_Quit();
 }
 
@@ -41,7 +42,7 @@ void Window::Init()
         SDL_WINDOWPOS_CENTERED,
         spec.width,
         spec.height,
-        SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+        SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_OPENGL);
     if (!window)
         throw std::runtime_error(SDL_GetError());
 

@@ -23,11 +23,8 @@ class Arrow : public GameObject
 public:
     Arrow(const Sprite &sprite, glm::vec2 position) : GameObject(sprite, position) {}
 
-    bool TouchDown(float groundLevel) const { return (GetPosition().y + sprite.GetHeight() * glm::sin(GetOrientation())) > groundLevel; }
-
     void ActivateFreeFall() { freeFall = true; }
     void DeactivateFreeFall() { freeFall = false; }
-
     bool IsFreeFalling() const { return freeFall; }
 
     void Update(const Timestep &dt);
