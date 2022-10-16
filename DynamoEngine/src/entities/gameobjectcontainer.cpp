@@ -16,11 +16,11 @@ GameObject *GameObjectContainer::GetObject(std::size_t objectId) const
         return objects[objectId].get();
     return nullptr;
 }
-GameObject *GameObjectContainer::ReleaseObject(std::size_t objectId)
+std::unique_ptr<GameObject> GameObjectContainer::ReleaseObject(std::size_t objectId)
 {
     GameObject *object = objects[objectId].release();
     RemoveObject(objectId);
-    return object;
+    return std::unique_ptr<GameObject>(object);
 }
 
 void GameObjectContainer::ResetObject(std::size_t objectId, GameObject *object)

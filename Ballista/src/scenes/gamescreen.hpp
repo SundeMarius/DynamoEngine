@@ -59,17 +59,17 @@ public:
     void Render() override;
 
 private:
-    void AddText(GameResource type, SDL_Point position, int width, int height, SDL_Color color);
+    void AddText(GameResource type, const std::string &text, TextSpecification textSpec);
     void AddBackground(GameResource type, SDL_Point position, int width, int height);
 
 private:
     std::unique_ptr<Ballista> player{};
-    std::vector<std::unique_ptr<Arrow>> arrows{1};
+    std::vector<std::unique_ptr<Arrow>> arrows{};
     glm::vec2 gravity{0.f, physics::constants::accelerationDueToGravity};
     int groundLevel{0};
 
-    bool ArrowHasLanded(Arrow *arrow) const;
-    void ApplyGravity(Arrow *arrow, const Timestep &dt) const;
+    bool ArrowHasLanded(Arrow &arrow) const;
+    void ApplyGravity(GameObject &object, const Timestep &dt) const;
 
 private:
     GameSceneAssetConfig config{};

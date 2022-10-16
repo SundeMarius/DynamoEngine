@@ -40,17 +40,16 @@ public:
     void Render() override;
 
 private:
-    SceneManager sceneManager{};
     std::map<GameScene, int> sceneIds{};
+    SceneManager sceneManager{};
 
     EventTrigger eventTrigger{};
 
     bool pauseGame = false;
 
 private:
-    Font fpsFont{};
-    TextSpecification textSpec{};
-    Text fpsCounter{};
+    TextSpecification fpsTextSpec{};
+    Text fpsText{};
 
     void RenderFpsCounter();
 };

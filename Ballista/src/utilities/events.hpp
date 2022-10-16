@@ -3,5 +3,6 @@
 enum GameEvent
 {
     togglePauseGame,
-    switchToGameScene
+    switchToGameScene,
+    arrowLaunched
 };

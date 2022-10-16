@@ -29,10 +29,10 @@ class CompositeGameObject : public GameObject
 public:
     virtual ~CompositeGameObject() = default;
 
-    int AddObject(GameObject *object);
+    int AddObject(std::unique_ptr<GameObject> object);
     void RemoveObject(int objectId);
     GameObject *GetObject(int objectId);
-    GameObject *ReleaseObject(int objectId);
+    std::unique_ptr<GameObject> ReleaseObject(int objectId);
 
     void SetPosition(const glm::vec2 &position) override;
     void AddPosition(const glm::vec2 &displacement) override;

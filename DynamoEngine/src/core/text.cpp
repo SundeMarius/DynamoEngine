@@ -1,22 +1,23 @@
 // Copyright (C) 2022 Marius Sunde Sivertsen, marius.sunde.sivertsen@protonmail.com
 //
-// This file is part of DynamoEngine Engine.
+// This file is part of DynamoEngine.
 //
-// DynamoEngine Engine is free software: you can redistribute it and/or modify
+// DynamoEngine is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// DynamoEngine Engine is distributed in the hope that it will be useful,
+// DynamoEngine is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with DynamoEngine Engine.  If not, see <http://www.gnu.org/licenses/>.
+// along with DynamoEngine.  If not, see <http://www.gnu.org/licenses/>.
 #include "DynamoEngine/src/core/text.hpp"
+#include "DynamoEngine/src/exceptions/exceptions.hpp"
 
-Text::Text(Window &window, const std::string &text, TextSpecification specification) : text(text), spec(specification)
+Text::Text(Window &window, const std::string &text, const TextSpecification &specification) : text(text), spec(specification)
 {
     Surface textSurface = TTF_RenderText_Solid(spec.font->GetTTFFont(), text.c_str(), spec.color);
     mTexture = std::make_unique<Texture>(window, &textSurface);
@@ -24,7 +25,6 @@ Text::Text(Window &window, const std::string &text, TextSpecification specificat
 
 void Text::Render()
 {
-    int i = SDL_RenderCopy(mTexture->GetSDLRenderer(), mTexture->GetSDLTexture(), NULL, &spec.box);
-    if (i != 0)
-        throw std::runtime_error(SDL_GetError());
+    if (SDL_RenderCopy(mTexture->GetSDLRenderer(), mTexture->GetSDLTexture(), NULL, &spec.box) != 0)
+        throw WarningException(SDL_GetError());
 }

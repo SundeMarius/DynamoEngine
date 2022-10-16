@@ -31,7 +31,7 @@ bool GameScreen::Init()
     AddBackground(GameResource::Background, {0, 0}, width, height);
     AddBackground(GameResource::Ground, {0, groundLevel}, width, height / 10);
 
-    player = std::make_unique<Ballista>(config.playerConfig, textureLoader, 0.15f);
+    player = std::make_unique<Ballista>(config.playerConfig, textureLoader, 0.17f);
     player->Init(groundLevel);
     player->SetLaunchOrientation(-math::constants::pi / 4.0f);
     gravity *= player->GetSize() / 2.f;
@@ -66,12 +66,12 @@ void GameScreen::ProcessInput(SDL_Event *event)
         }
         else if (event->key.keysym.sym == SDLK_SPACE)
         {
-            Arrow *currentArrow = player->ShootArrow(0.8f);
+            std::unique_ptr<Arrow> currentArrow = player->ShootArrow(1.f);
             if (currentArrow)
             {
-                arrows.back().reset(currentArrow);
-                arrows.emplace_back();
+                arrows.emplace_back(std::move(currentArrow));
                 player->ReloadArrow();
+                eventTrigger.TriggerEvent(GameEvent::arrowLaunched);
             }
         }
         else if (event->key.keysym.sym == SDLK_ESCAPE)
@@ -95,12 +95,11 @@ void GameScreen::Update(const Timestep &dt)
     player->Update(dt);
     for (auto &arrow : arrows)
     {
-        if (!arrow || !arrow->IsFreeFalling())
-            continue;
-        if (!ArrowHasLanded(arrow.get()))
+        if (!ArrowHasLanded(*arrow))
         {
+            ApplyGravity(*arrow, dt);
+            arrow->SetOrientation(std::atan2(arrow->GetVelocity().y, arrow->GetVelocity().x));
             arrow->Update(dt);
-            ApplyGravity(arrow.get(), dt);
         }
     }
     currentSeconds += dt.GetSeconds();
@@ -112,19 +111,13 @@ void GameScreen::Render()
     backgrounds[GameResource::Ground].Render();
     player->Render();
     for (auto &arrow : arrows)
-        if (arrow)
-            arrow->Render();
+        arrow->Render();
 }
 
-void GameScreen::AddText(GameResource type, SDL_Point position, int width, int height, SDL_Color color)
+void GameScreen::AddText(GameResource type, const std::string &text, TextSpecification textSpec)
 {
     auto font = fontLoader.GetAsset(assetIds[type]);
-    TextSpecification textSpec = {
-        font.get(),
-        color,
-        {position.x, position.y, width, height},
-    };
-    texts.try_emplace(type, window, " ", textSpec);
+    texts.try_emplace(type, window, text, textSpec);
 }
 
 void GameScreen::AddBackground(GameResource type, SDL_Point position, int width, int height)
@@ -133,21 +126,18 @@ void GameScreen::AddBackground(GameResource type, SDL_Point position, int width,
     backgrounds.try_emplace(type, texture, position, width, height);
 }
 
-bool GameScreen::ArrowHasLanded(Arrow *arrow) const
+bool GameScreen::ArrowHasLanded(Arrow &arrow) const
 {
-    if (!arrow)
-        return false;
-    if ((arrow->GetPosition().y + arrow->GetSprite()->GetHeight() * glm::sin(arrow->GetOrientation())) > groundLevel)
+    if (arrow.HasLanded(groundLevel))
     {
-        arrow->SetVelocity({0.f, 0.f});
-        arrow->SetRotationSpeed(0.f);
-        arrow->DeactivateFreeFall();
+        arrow.SetVelocity({0.f, 0.f});
+        arrow.SetRotationSpeed(0.f);
         return true;
     }
     return false;
 }
 
-void GameScreen::ApplyGravity(Arrow *arrow, const Timestep &dt) const
+void GameScreen::ApplyGravity(GameObject &object, const Timestep &dt) const
 {
-    arrow->AddVelocity(gravity * dt.GetSeconds());
+    object.AddVelocity(gravity * dt.GetSeconds());
 }

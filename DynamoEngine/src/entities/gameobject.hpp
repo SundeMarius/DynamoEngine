@@ -44,7 +44,7 @@ public:
 
     Sprite *GetSprite() { return &sprite; }
 
-    void Render();
+    void Render() const;
     virtual void Update(const Timestep &dt) = 0;
 
 protected:

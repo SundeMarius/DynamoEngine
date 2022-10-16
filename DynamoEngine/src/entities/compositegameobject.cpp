@@ -17,9 +17,9 @@
 
 #include "DynamoEngine/src/entities/compositegameobject.hpp"
 
-int CompositeGameObject::AddObject(GameObject *object)
+int CompositeGameObject::AddObject(std::unique_ptr<GameObject> object)
 {
-    objects.try_emplace(objectId, object);
+    objects.try_emplace(objectId, std::move(object));
     return objectId++;
 }
 
@@ -33,11 +33,11 @@ GameObject *CompositeGameObject::GetObject(int objectId)
     return objects.at(objectId).get();
 }
 
-GameObject *CompositeGameObject::ReleaseObject(int objectId)
+std::unique_ptr<GameObject> CompositeGameObject::ReleaseObject(int objectId)
 {
     GameObject *object = objects.at(objectId).release();
     RemoveObject(objectId);
-    return object;
+    return std::unique_ptr<GameObject>(object);
 }
 
 void CompositeGameObject::SetPosition(const glm::vec2 &position)

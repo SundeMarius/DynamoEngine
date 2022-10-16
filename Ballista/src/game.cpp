@@ -33,11 +33,14 @@ Game::Game(const ApplicationSpecification &applicationSpec) : Application(applic
     {
         eventTrigger.RegisterEvent(GameEvent::togglePauseGame);
         eventTrigger.RegisterEvent(GameEvent::switchToGameScene);
+        eventTrigger.RegisterEvent(GameEvent::arrowLaunched);
 
         int width = window.GetWidth();
         int height = window.GetHeight();
-        fpsFont.LoadFromFile(window, applicationSpec.config.at("Debug").at("fontPath"));
-        textSpec = {&fpsFont, {200, 200, 200, 255}, {int(width * 0.95f), 0, int(width * 0.04f), int(height * 0.04f)}};
+        fpsTextSpec = TextSpecification(
+            window,
+            applicationSpec.config.at("Debug").at("fontPath"),
+            {200, 200, 200, 255}, {int(width * 0.95f), 0, int(width * 0.04f), int(height * 0.04f)});
 
         appLog.Trace("Splash screen initializing...");
         sceneIds[GameScene::SplashScreen] = sceneManager.AddScene(std::make_unique<SplashScreen>(window, eventTrigger));
@@ -85,6 +88,10 @@ void Game::OnEvent(SDL_Event *event)
     {
         pauseGame = !pauseGame;
     }
+    else if (event->type == eventTrigger.GetEventType(GameEvent::arrowLaunched))
+    {
+        appLog.Debug("Arrow launched!");
+    }
     else
     {
         sceneManager.ProcessInput(event);
@@ -109,8 +116,8 @@ void Game::Render()
 
 void Game::RenderFpsCounter()
 {
-    fpsCounter = Text(window, "FPS: " + std::to_string(window.GetFPS()), textSpec);
-    fpsCounter.Render();
+    fpsText = Text(window, "FPS: " + std::to_string(window.GetFPS()), fpsTextSpec);
+    fpsText.Render();
 }
 
 Application *CreateApplication(ApplicationCommandLineArguments args)
@@ -138,7 +145,7 @@ Application *CreateApplication(ApplicationCommandLineArguments args)
         };
         return new Game(appSpec);
     }
-    catch (std::system_error &e)
+    catch (std::iostream::failure &e)
     {
         std::cerr << "Error opening/reading file " + configFilePath + ": " << strerror(errno) << '\n';
     }

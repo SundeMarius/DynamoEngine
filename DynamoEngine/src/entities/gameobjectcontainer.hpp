@@ -13,7 +13,7 @@ public:
     std::size_t AddObject(GameObject *object);
     void RemoveObject(std::size_t objectId);
     GameObject *GetObject(std::size_t objectId) const;
-    GameObject *ReleaseObject(std::size_t objectId);
+    std::unique_ptr<GameObject> ReleaseObject(std::size_t objectId);
     void ResetObject(std::size_t objectId, GameObject *object);
 
     void Render();

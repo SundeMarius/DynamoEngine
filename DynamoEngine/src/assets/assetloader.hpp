@@ -1,19 +1,19 @@
 // Copyright (C) 2022 Marius Sunde Sivertsen, marius.sunde.sivertsen@protonmail.com
 //
-// This file is part of DynamoEngine Engine.
+// This file is part of DynamoEngine.
 //
-// DynamoEngine Engine is free software: you can redistribute it and/or modify
+// DynamoEngine is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// DynamoEngine Engine is distributed in the hope that it will be useful,
+// DynamoEngine is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with DynamoEngine Engine.  If not, see <http://www.gnu.org/licenses/>.
+// along with DynamoEngine.  If not, see <http://www.gnu.org/licenses/>.
 #pragma once
 
 #include "DynamoEngine/src/assets/asset.hpp"
@@ -33,13 +33,11 @@ public:
 
     AssetId AddAsset(const std::string &filePath)
     {
-        auto assetIterator = assets.find(filePath);
-        if (assetIterator != assets.end())
-            return assetIterator->second.id;
-
-        auto as = std::make_shared<T>();
-        as->LoadFromFile(window, filePath);
-        assets[filePath] = {.id = currentId, .asset = std::move(as)};
+        auto [it, inserted] = assets.try_emplace(filePath);
+        if (!inserted)
+            return it->second.id;
+        it->second.asset->LoadFromFile(window, filePath);
+        it->second.id = currentId;
         return currentId++;
     }
     void RemoveAsset(AssetId id)
@@ -71,7 +69,7 @@ private:
     struct AssetElement
     {
         int id = 0;
-        std::shared_ptr<T> asset{};
+        std::shared_ptr<T> asset = std::make_shared<T>();
     };
     std::unordered_map<std::string, AssetElement> assets{};
     AssetId currentId = 0;

@@ -1,3 +1,7 @@
+*
+!*/
+!*.*
+
 # Prerequisites
 *.d
 
@@ -35,5 +39,7 @@
 .vscode/
 
 # assets
+assets/*
 *.png
+*.svg
 *.log

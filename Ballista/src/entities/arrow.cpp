@@ -16,17 +16,16 @@
 // along with Ballista.  If not, see <http://www.gnu.org/licenses/>.
 #include "arrow.hpp"
 
+bool Arrow::HasLanded(float groundLevel)
+{
+    if (landed)
+        return true;
+    return landed = ((GetPosition().y + sprite.GetHeight() * glm::sin(GetOrientation())) > groundLevel);
+}
+
 void Arrow::Update(const Timestep &dt)
 {
     const float dts = dt.GetSeconds();
-    if (IsFreeFalling())
-    {
-        const float angle = std::atan2(vel.y, vel.x);
-        SetOrientation(angle);
-    }
-    else
-    {
-        Rotate(angSpeed * dts);
-    }
+    Rotate(angSpeed * dts);
     AddPosition(vel * dts);
 }

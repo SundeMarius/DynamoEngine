@@ -16,6 +16,7 @@
 // along with DynamoEngine. If not, see <http://www.gnu.org/licenses/>.
 
 #include "DynamoEngine/src/core/application.hpp"
+#include "DynamoEngine/src/exceptions/exceptions.hpp"
 
 #include <SDL2/SDL_image.h>
 
@@ -26,7 +27,7 @@ Application::Application(const ApplicationSpecification &applicationSpec)
 {
     appLog.Trace("Initializing application: " + applicationSpec.windowSpecification.name);
     if (!Init())
-        throw std::runtime_error("Fatal error occured while initializing the application components. See the log for details");
+        throw FatalException("Fatal error occured while initializing the application components. See the log for details");
     appLog.Success("Application initialized successfully");
 }
 
@@ -37,7 +38,8 @@ Application::~Application()
 
 bool Application::Init()
 {
-    appLog.Trace("Initializing window of size " + std::to_string(window.GetWidth()) + "x" + std::to_string(window.GetHeight()));
+    appLog.Trace("Initializing window");
+    appLog.Trace("\tSize: " + std::to_string(window.GetWidth()) + "x" + std::to_string(window.GetHeight()));
     window.Init();
     appLog.Trace("Window initialized");
     // Initialize texture settings
@@ -77,9 +79,13 @@ int Application::Start()
             SDL_RenderPresent(window.GetSDLRenderer());
             window.SetFrameTime(SDL_GetTicks64() - startTimeMilliSec);
         }
-        catch (const std::exception &e)
+        catch (const WarningException &w)
         {
-            appLog.Error(e.what());
+            appLog.Warning(w.what());
+        }
+        catch (const FatalException &f)
+        {
+            appLog.Fatal(f.what());
             std::cerr << "An error occured while the game was running. See the log.\n";
             return EXIT_FAILURE;
         }

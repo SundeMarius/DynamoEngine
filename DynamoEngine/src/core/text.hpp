@@ -28,16 +28,21 @@
 
 struct TextSpecification
 {
-    Font *font;
-    SDL_Color color;
-    SDL_Rect box;
+    std::shared_ptr<Font> font = std::make_shared<Font>();
+    SDL_Color color{};
+    SDL_Rect box{};
+    TextSpecification() = default;
+    TextSpecification(Window &window, std::string fontFileName, SDL_Color color, SDL_Rect box) : color(color), box(box)
+    {
+        font->LoadFromFile(window, fontFileName);
+    }
 };
 
 class Text
 {
 public:
     Text() = default;
-    Text(Window &window, const std::string &text, TextSpecification specification);
+    Text(Window &window, const std::string &text, const TextSpecification &specification);
 
     void Render();
 

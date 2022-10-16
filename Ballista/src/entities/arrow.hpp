@@ -23,12 +23,10 @@ class Arrow : public GameObject
 public:
     Arrow(const Sprite &sprite, glm::vec2 position) : GameObject(sprite, position) {}
 
-    void ActivateFreeFall() { freeFall = true; }
-    void DeactivateFreeFall() { freeFall = false; }
-    bool IsFreeFalling() const { return freeFall; }
+    bool HasLanded(float groundLevel);
 
-    void Update(const Timestep &dt);
+    void Update(const Timestep &dt) override;
 
 private:
-    bool freeFall = false;
+    bool landed = false;
 };

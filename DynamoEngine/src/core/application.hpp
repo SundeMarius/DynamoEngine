@@ -32,7 +32,7 @@ using json = nlohmann::json;
 
 struct ApplicationCommandLineArguments
 {
-    int argc;
+    int argc{};
     char **argv = nullptr;
 };
 // dd
